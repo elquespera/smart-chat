@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Header from "components/Header";
-import Chat from "components/Chat";
-import Input from "components/Input";
+import Main from "components/Main";
 
 export default function Home() {
   return (
@@ -13,10 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.svg" />
       </Head>
       <Header />
-      <main className="h-[100dvh] pt-header flex flex-col">
-        <Chat />
-        <Input />
-      </main>
+      <Main />
     </>
   );
 }
