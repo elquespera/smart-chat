@@ -1,5 +1,7 @@
 import Head from "next/head";
-import { Inter } from "next/font/google";
+import Header from "components/Header";
+import Chat from "components/Chat";
+import Input from "components/Input";
 
 export default function Home() {
   return (
@@ -10,7 +12,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.svg" />
       </Head>
-      <main></main>
+      <Header />
+      <main className="h-[100dvh] pt-header flex flex-col">
+        <Chat />
+        <Input />
+      </main>
     </>
   );
 }
