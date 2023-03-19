@@ -11,7 +11,7 @@ export default function Input({ onSend, onSettings }: InputProps) {
   const [valid, setValid] = useState(false);
 
   const handleSend = () => {
-    if (onSend) onSend(message);
+    if (valid && onSend) onSend(message);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +28,7 @@ export default function Input({ onSend, onSettings }: InputProps) {
       <input
         type="text"
         value={message}
+        placeholder="Ask a question"
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         className="w-full flex-1 outline-none"

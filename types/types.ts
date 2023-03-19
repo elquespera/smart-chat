@@ -7,4 +7,4 @@ export interface MessageData {
 
 export type ChatData = MessageData[];
 
-export type IconType = "send" | "clear" | "settings";
+export type IconType = "send" | "clear" | "settings" | "close";
