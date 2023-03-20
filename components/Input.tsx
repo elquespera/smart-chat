@@ -10,7 +10,7 @@ interface InputProps {
 export default function Input({ busy, onSend, onSettings }: InputProps) {
   const [message, setMessage] = useState("");
   const [valid, setValid] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
     if (valid && !busy) {
@@ -19,12 +19,15 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
     }
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") handleSend();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   const handleClear = () => {
@@ -38,14 +41,14 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
 
   return (
     <div className="flex p-2 gap-1">
-      <input
-        type="text"
+      <textarea
+        className="w-full flex-1 outline-none overflow-y-hidden resize-none"
+        rows={1}
         ref={inputRef}
         value={message}
         placeholder="Ask a question"
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        className="w-full flex-1 outline-none"
       />
       {valid && <IconButton icon="clear" onClick={handleClear} />}
       <IconButton icon="send" onClick={handleSend} disabled={!valid || busy} />
