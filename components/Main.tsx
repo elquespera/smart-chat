@@ -1,6 +1,7 @@
 import axios from "axios";
 import Chat from "components/Chat";
 import Input from "components/Input";
+import { getLocalStorage, setLocalStorage } from "lib/storage";
 import { useEffect, useState } from "react";
 import { ChatData, ChatRole, MessageData } from "types";
 import Settings from "./Settings";
@@ -14,7 +15,9 @@ export default function Main({}: MainProps) {
 
   const addMessage = (content: string, role: ChatRole) => {
     setMessages((current) => {
-      return [...current, { role, content }];
+      const newMessages = [...current, { role, content }];
+      setLocalStorage({ chat: newMessages });
+      return newMessages;
     });
   };
 
@@ -45,6 +48,11 @@ export default function Main({}: MainProps) {
     fetchChat();
     setSettingsOpen(false);
   }, [messages]);
+
+  useEffect(() => {
+    const { chat } = getLocalStorage();
+    if (chat) setMessages(chat);
+  }, []);
 
   return (
     <main className="h-[100dvh] pt-header flex flex-col">

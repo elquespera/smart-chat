@@ -8,3 +8,7 @@ export interface MessageData {
 export type ChatData = MessageData[];
 
 export type IconType = "send" | "clear" | "settings" | "close";
+
+export interface LocalStorageData {
+  chat?: ChatData;
+}
