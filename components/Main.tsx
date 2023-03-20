@@ -25,6 +25,11 @@ export default function Main({}: MainProps) {
     addMessage(message, "user");
   };
 
+  const handleClearChat = () => {
+    setMessages([]);
+    setLocalStorage({ chat: [] });
+  };
+
   const handleSettings = () => {
     setSettingsOpen((current) => !current);
   };
@@ -56,7 +61,7 @@ export default function Main({}: MainProps) {
 
   return (
     <main className="h-[100dvh] pt-header flex flex-col">
-      <Chat messages={messages} busy={fetching} />
+      <Chat messages={messages} busy={fetching} onClear={handleClearChat} />
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <Input busy={fetching} onSend={handleSend} onSettings={handleSettings} />
     </main>
