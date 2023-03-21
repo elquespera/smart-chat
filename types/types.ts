@@ -18,3 +18,10 @@ export type IconType =
 export interface LocalStorageData {
   chat?: ChatData;
 }
+
+export type AssistantMoods =
+  | "happy"
+  | "ironic"
+  | "sad"
+  | "excited"
+  | "whimsical";
