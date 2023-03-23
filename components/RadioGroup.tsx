@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface RadioGroupItemProps {
   value?: string;
@@ -8,6 +8,7 @@ export interface RadioGroupItemProps {
 
 interface RadioGroupProps {
   name?: string;
+  value?: string;
   children?:
     | React.ReactElement<RadioGroupItemProps>
     | React.ReactElement<RadioGroupItemProps>[];
@@ -16,6 +17,7 @@ interface RadioGroupProps {
 
 export default function RadioGroup({
   name,
+  value,
   children,
   onChange,
 }: RadioGroupProps) {
@@ -48,16 +50,20 @@ export default function RadioGroup({
           name={name}
           value={value}
           checked={checked}
-          className="w-0 h-0 relative"
+          className="sr-only"
           onChange={() => handleChange(value)}
         />
-        <span>{item.props.children}</span>
+        {item.props.children}
       </label>
     );
   };
 
+  useEffect(() => {
+    setSelected(value);
+  }, [value]);
+
   return (
-    <ul className="flex gap-2">
+    <ul className="flex">
       {Array.isArray(children)
         ? children.map((child, index) => renderRadio(index, child))
         : renderRadio(0, children)}
@@ -65,6 +71,8 @@ export default function RadioGroup({
   );
 }
 
-RadioGroup.Item = function RadioGroupItem({ children }: RadioGroupItemProps) {
-  return <>{children}</>;
+const RadioGroupItem: React.FunctionComponent<RadioGroupItemProps> = () => {
+  return null;
 };
+
+RadioGroup.Item = RadioGroupItem;

@@ -1,6 +1,7 @@
+import { ASSISTNT_MOODS } from "consts";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Configuration as OpenAIConfig, OpenAIApi } from "openai";
-import { ChatData, MessageData } from "types";
+import { AssistantMood, ChatData, MessageData } from "types";
 
 const openai = new OpenAIApi(
   new OpenAIConfig({
@@ -13,10 +14,16 @@ export default async function handler(
   res: NextApiResponse<MessageData | null>
 ) {
   const messages = <ChatData>req.body;
+  const mood = req.query.mood;
+  const moodPrompt =
+    typeof mood === "string"
+      ? ASSISTNT_MOODS[mood as AssistantMood].prompt ||
+        ASSISTNT_MOODS.happy.prompt
+      : ASSISTNT_MOODS.happy.prompt;
 
   const result = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: [{ role: "system", content: "Be ironic" }, ...messages],
+    messages: [{ role: "system", content: moodPrompt }, ...messages],
   });
 
   const msg = result.data.choices?.[0].message;

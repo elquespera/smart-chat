@@ -17,11 +17,12 @@ export type IconType =
 
 export interface LocalStorageData {
   chat?: ChatData;
+  mood?: string;
 }
 
-export type AssistantMoods =
+export type AssistantMood =
   | "happy"
   | "ironic"
-  | "sad"
+  | "sarcastic"
   | "excited"
   | "whimsical";

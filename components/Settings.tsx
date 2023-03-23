@@ -6,11 +6,13 @@ import RadioGroup from "./RadioGroup";
 interface SettingsProps {
   open?: boolean;
   onClose?: () => void;
+  mood?: string;
   onMoodChange?: (mood?: string) => void;
 }
 
 export default function Settings({
   open,
+  mood,
   onMoodChange,
   onClose,
 }: SettingsProps) {
@@ -22,10 +24,10 @@ export default function Settings({
       <h2 className="flex items-center justify-between text-xl">
         Settings <IconButton icon="close" onClick={handleClose} />
       </h2>
-      <RadioGroup name="assistant_mood" onChange={onMoodChange}>
+      <RadioGroup name="assistant_mood" value={mood} onChange={onMoodChange}>
         {Object.values(ASSISTNT_MOODS).map(({ name, smiley }) => (
           <RadioGroup.Item key={name} value={name}>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center sm:min-w-[4rem]">
               <span>{smiley}</span>
               <span className="hidden sm:inline">{name}</span>
             </div>

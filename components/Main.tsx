@@ -12,6 +12,7 @@ export default function Main({}: MainProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatData>([]);
   const [fetching, setFetching] = useState(false);
+  const [mood, setMood] = useState<string>();
 
   const addMessage = (content: string, role: ChatRole) => {
     setMessages((current) => {
@@ -34,6 +35,11 @@ export default function Main({}: MainProps) {
     setSettingsOpen((current) => !current);
   };
 
+  const handleMoodChange = (newMood?: string) => {
+    setMood(newMood);
+    setLocalStorage({ mood: newMood });
+  };
+
   useEffect(() => {
     const fetchChat = async () => {
       if (fetching) return;
@@ -41,7 +47,9 @@ export default function Main({}: MainProps) {
 
       try {
         setFetching(true);
-        const response = await axios.post<MessageData>("api/chat/", messages);
+        const response = await axios.post<MessageData>("api/chat/", messages, {
+          params: { mood },
+        });
         addMessage(response.data.content, response.data.role);
       } catch (error) {
         console.error(error);
@@ -55,14 +63,20 @@ export default function Main({}: MainProps) {
   }, [messages]);
 
   useEffect(() => {
-    const { chat } = getLocalStorage();
+    const { chat, mood } = getLocalStorage();
     if (chat) setMessages(chat);
+    setMood(mood);
   }, []);
 
   return (
     <main className="h-[100dvh] pt-header flex flex-col">
       <Chat messages={messages} busy={fetching} onClear={handleClearChat} />
-      <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <Settings
+        open={settingsOpen}
+        mood={mood}
+        onMoodChange={handleMoodChange}
+        onClose={() => setSettingsOpen(false)}
+      />
       <Input busy={fetching} onSend={handleSend} onSettings={handleSettings} />
     </main>
   );
