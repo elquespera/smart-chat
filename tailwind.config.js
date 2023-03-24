@@ -13,6 +13,7 @@ module.exports = {
       colors: {
         primary: "#000",
         background: "#fff",
+        contrast: "#fff",
         "background-tranparent": "#fff0",
         user: "#fff",
         assistant: "#eee",
