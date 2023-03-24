@@ -2,6 +2,7 @@ import { ASSISTNT_MOODS } from "consts";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Configuration as OpenAIConfig, OpenAIApi } from "openai";
 import { AssistantMood, ChatData, MessageData } from "types";
+import { getAuth } from "@clerk/nextjs/server";
 
 const openai = new OpenAIApi(
   new OpenAIConfig({
@@ -13,6 +14,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<MessageData | null>
 ) {
+  console.log("chat");
+  const { userId } = getAuth(req);
+  if (!userId) {
+    res.status(401).json(null);
+    return;
+  }
+
   const messages = <ChatData>req.body;
   const mood = req.query.mood;
   const moodPrompt =

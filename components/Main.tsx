@@ -1,3 +1,4 @@
+import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import Chat from "components/Chat";
 import Input from "components/Input";
@@ -5,6 +6,7 @@ import { getLocalStorage, setLocalStorage } from "lib/storage";
 import { useEffect, useState } from "react";
 import { ChatData, ChatRole, MessageData } from "types";
 import Settings from "./Settings";
+import SignInButton from "./SignInButton";
 
 interface MainProps {}
 
@@ -13,6 +15,8 @@ export default function Main({}: MainProps) {
   const [messages, setMessages] = useState<ChatData>([]);
   const [fetching, setFetching] = useState(false);
   const [mood, setMood] = useState<string>();
+
+  const { userId } = useAuth();
 
   const addMessage = (content: string, role: ChatRole) => {
     setMessages((current) => {
@@ -70,14 +74,27 @@ export default function Main({}: MainProps) {
 
   return (
     <main className="h-[100dvh] pt-header flex flex-col">
-      <Chat messages={messages} busy={fetching} onClear={handleClearChat} />
-      <Settings
-        open={settingsOpen}
-        mood={mood}
-        onMoodChange={handleMoodChange}
-        onClose={() => setSettingsOpen(false)}
-      />
-      <Input busy={fetching} onSend={handleSend} onSettings={handleSettings} />
+      {userId ? (
+        <>
+          {" "}
+          <Chat messages={messages} busy={fetching} onClear={handleClearChat} />
+          <Settings
+            open={settingsOpen}
+            mood={mood}
+            onMoodChange={handleMoodChange}
+            onClose={() => setSettingsOpen(false)}
+          />
+          <Input
+            busy={fetching}
+            onSend={handleSend}
+            onSettings={handleSettings}
+          />
+        </>
+      ) : (
+        <div className="flex justify-center">
+          <SignInButton />
+        </div>
+      )}
     </main>
   );
 }
