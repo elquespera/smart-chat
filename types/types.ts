@@ -13,7 +13,8 @@ export type IconType =
   | "settings"
   | "close"
   | "computer"
-  | "user";
+  | "user"
+  | "chat";
 
 export interface LocalStorageData {
   chat?: ChatData;

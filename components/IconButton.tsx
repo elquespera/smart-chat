@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { IconType } from "types";
 import Icon from "./Icon";
 
@@ -7,7 +8,7 @@ interface IconButtonProps extends React.ComponentPropsWithoutRef<"button"> {
 
 export default function IconButton({ icon, ...props }: IconButtonProps) {
   return (
-    <button {...props} className="disabled:opacity-60">
+    <button {...props} className={clsx("disabled:opacity-60", props.className)}>
       <Icon type={icon} />
     </button>
   );

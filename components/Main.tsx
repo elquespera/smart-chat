@@ -76,7 +76,6 @@ export default function Main({}: MainProps) {
     <main className="h-[100dvh] pt-header flex flex-col">
       {userId ? (
         <>
-          {" "}
           <Chat messages={messages} busy={fetching} onClear={handleClearChat} />
           <Settings
             open={settingsOpen}

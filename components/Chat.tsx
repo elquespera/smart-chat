@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { ChatData } from "types";
+import Button from "./Button";
 import Icon from "./Icon";
 
 interface ChatProps {
@@ -33,28 +34,28 @@ export default function Chat({ messages, busy, onClear }: ChatProps) {
         ref={wrapperRef}
         className="flex-1 overflow-auto overflow-[overlay] pb-8"
       >
-        <ul className="flex flex-col">
+        <ul className="grid justify-center pb-12 sm:px-8">
           {messages.map(({ content, role }, index) => (
             <li
               key={index}
               className={clsx(
-                "flex p-2",
+                "flex p-2 sm:p-4 sm:rounded-lg max-w-screen-md",
                 role === "user" ? "bg-user" : "bg-assistant"
               )}
             >
               <Icon
                 type={role === "user" ? "user" : "computer"}
-                className="flex-shrink-0 mr-4"
+                className="flex-shrink-0 mr-4 text-xl sm:text-2xl"
               />
-              <pre className="whitespace-pre-wrap">{content}</pre>
+              <pre className="whitespace-pre-wrap font-sans">{content}</pre>
             </li>
           ))}
+          {busy && <li className="text-center">Thinking...</li>}
         </ul>
-        {busy && <div className="text-center">Thinking...</div>}
       </div>
       {messages.length > 0 && (
-        <div className="absolute bottom-0 h-16 flex flex-col items-center justify-end w-full bg-gradient-to-t from-background to-background-tranparent">
-          <button onClick={handleClear}>Start new conversation</button>
+        <div className="absolute bottom-0 pb-4 h-16 flex flex-col items-center justify-end w-full bg-gradient-to-t from-background to-background-tranparent">
+          <Button onClick={handleClear}>Start new conversation</Button>
         </div>
       )}
     </div>

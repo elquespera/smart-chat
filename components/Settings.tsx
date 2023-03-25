@@ -20,7 +20,12 @@ export default function Settings({
     if (onClose) onClose();
   };
   return (
-    <div className={clsx(open ? "flex" : "hidden", "flex-col p-4")}>
+    <div
+      className={clsx(
+        open ? "flex" : "hidden",
+        "flex-col p-4 border-t border-divider shadow-md"
+      )}
+    >
       <h2 className="flex items-center justify-between text-xl">
         Settings <IconButton icon="close" onClick={handleClose} />
       </h2>

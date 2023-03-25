@@ -8,13 +8,14 @@ module.exports = {
   theme: {
     extend: {
       spacing: {
-        header: "3rem",
+        header: "3.5rem",
       },
       colors: {
         primary: "#000",
         background: "#fff",
         contrast: "#fff",
         "background-tranparent": "#fff0",
+        divider: "#bbb",
         user: "#fff",
         assistant: "#eee",
       },

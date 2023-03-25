@@ -11,6 +11,8 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
   const [message, setMessage] = useState("");
   const [valid, setValid] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const buttonClass = "text-xl";
+  const lines = Math.max(1, Math.min(5, message.split(/\r|\r\n|\n/).length));
 
   const handleSend = () => {
     if (valid && !busy) {
@@ -25,34 +27,55 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
-      e.preventDefault();
-      handleSend();
+      if (e.ctrlKey || e.shiftKey) {
+        return true;
+      } else {
+        e.preventDefault();
+        handleSend();
+      }
     }
   };
 
   const handleClear = () => {
     setMessage("");
-    if (inputRef.current) inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   useEffect(() => {
-    setValid(message !== "");
+    setValid(message.trim() !== "");
   }, [message]);
 
   return (
-    <div className="flex p-2 gap-1">
+    <label className="flex items-center justify-center px-4 py-3 gap-2 border-t border-divider">
       <textarea
-        className="w-full flex-1 outline-none overflow-y-hidden resize-none"
-        rows={1}
+        className="w-full outline-none overflow-y-hidden resize-none max-w-screen-md"
+        rows={lines}
         ref={inputRef}
         value={message}
         placeholder="Ask a question"
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
       />
-      {valid && <IconButton icon="clear" onClick={handleClear} />}
-      <IconButton icon="send" onClick={handleSend} disabled={!valid || busy} />
-      <IconButton icon="settings" onClick={onSettings} />
-    </div>
+      <div className="flex gap-1 sm:gap-2">
+        {valid && (
+          <IconButton
+            icon="clear"
+            className={buttonClass}
+            onClick={handleClear}
+          />
+        )}
+        <IconButton
+          icon="send"
+          className={buttonClass}
+          onClick={handleSend}
+          disabled={!valid || busy}
+        />
+        <IconButton
+          icon="settings"
+          className={buttonClass}
+          onClick={onSettings}
+        />
+      </div>
+    </label>
   );
 }
