@@ -96,8 +96,8 @@ export default function Main({}: MainProps) {
           </p>
           <SignInOrUpButton signIn />
           <p className="text-center">
-            Don't have an account yet? Create one here or log in using Google,
-            Github and others.
+            Don&apos;t have an account yet? Create one here or log in using
+            Google, Github and others.
           </p>
           <SignInOrUpButton />
         </div>
