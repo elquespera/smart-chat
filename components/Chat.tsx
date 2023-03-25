@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { ChatData } from "types";
+import Avatar from "./Avatar";
 import Button from "./Button";
 import Icon from "./Icon";
 
@@ -39,15 +40,14 @@ export default function Chat({ messages, busy, onClear }: ChatProps) {
             <li
               key={index}
               className={clsx(
-                "flex p-2 sm:p-4 sm:rounded-lg",
+                "flex p-2 sm:p-4 sm:rounded-lg gap-2",
                 role === "user" ? "bg-user" : "bg-assistant"
               )}
             >
-              <Icon
-                type={role === "user" ? "user" : "computer"}
-                className="flex-shrink-0 mr-4 text-xl sm:text-2xl"
-              />
-              <pre className="whitespace-pre-wrap font-sans">{content}</pre>
+              <Avatar user={role === "user"} />
+              <pre className="whitespace-pre-wrap font-sans pt-1">
+                {content}
+              </pre>
             </li>
           ))}
           {busy && <li className="text-center">Thinking...</li>}
