@@ -20,11 +20,12 @@ export default async function handler(
   const messages = <ChatData>req.body;
   const mood = req.query.mood;
   const moodPrompt =
-    ASSISTNT_MOODS[mood as AssistantMood].prompt || ASSISTNT_MOODS.happy.prompt;
+    ASSISTNT_MOODS[mood as AssistantMood]?.prompt ||
+    ASSISTNT_MOODS.happy.prompt;
 
   const result = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    // user: userId || ,
+    user: userId,
     messages: [{ role: "system", content: moodPrompt }, ...messages],
   });
 
