@@ -6,7 +6,7 @@ import { getLocalStorage, setLocalStorage } from "lib/storage";
 import { useEffect, useState } from "react";
 import { ChatData, ChatRole, MessageData } from "types";
 import Settings from "./Settings";
-import SignInButton from "./SignInButton";
+import SignInOrUpButton from "./SignInOrUpButton";
 
 interface MainProps {}
 
@@ -91,8 +91,16 @@ export default function Main({}: MainProps) {
           />
         </>
       ) : (
-        <div className="flex justify-center">
-          <SignInButton />
+        <div className="flex flex-col items-center gap-8 justify-center min-h-full p-4">
+          <p className="text-center">
+            You need to be authorized to use SmartChat.
+          </p>
+          <SignInOrUpButton signIn />
+          <p className="text-center">
+            Don't have an account yet? Create one here or log in using Google,
+            Github and others.
+          </p>
+          <SignInOrUpButton />
         </div>
       )}
     </main>
