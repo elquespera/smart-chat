@@ -24,7 +24,7 @@ export default async function handler(
 
   const result = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    user: userId,
+    // user: userId || ,
     messages: [{ role: "system", content: moodPrompt }, ...messages],
   });
 
@@ -32,6 +32,6 @@ export default async function handler(
   if (msg) {
     res.status(200).json({ role: msg.role, content: msg.content });
   } else {
-    res.status(501).json(null);
+    res.status(500).json(null);
   }
 }
