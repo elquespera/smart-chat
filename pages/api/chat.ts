@@ -32,6 +32,6 @@ export default async function handler(
   if (msg) {
     res.status(200).json({ role: msg.role, content: msg.content });
   } else {
-    res.status(500).json(null);
+    res.status(501).json(null);
   }
 }
