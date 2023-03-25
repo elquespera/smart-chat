@@ -3,6 +3,7 @@ import axios from "axios";
 import Chat from "components/Chat";
 import Input from "components/Input";
 import { getLocalStorage, setLocalStorage } from "lib/storage";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ChatData, ChatRole, MessageData } from "types";
 import Settings from "./Settings";
@@ -17,6 +18,10 @@ export default function Main({}: MainProps) {
   const [mood, setMood] = useState<string>();
 
   const { userId } = useAuth();
+
+  const { slug } = useRouter().query;
+
+  console.log(slug);
 
   const addMessage = (content: string, role: ChatRole) => {
     setMessages((current) => {
