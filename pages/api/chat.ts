@@ -14,23 +14,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<MessageData | null>
 ) {
-  console.log("chat");
   const { userId } = getAuth(req);
-  if (!userId) {
-    res.status(401).json(null);
-    return;
-  }
+  if (!userId) return;
 
   const messages = <ChatData>req.body;
   const mood = req.query.mood;
   const moodPrompt =
-    typeof mood === "string"
-      ? ASSISTNT_MOODS[mood as AssistantMood].prompt ||
-        ASSISTNT_MOODS.happy.prompt
-      : ASSISTNT_MOODS.happy.prompt;
+    ASSISTNT_MOODS[mood as AssistantMood].prompt || ASSISTNT_MOODS.happy.prompt;
 
   const result = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
+    user: userId,
     messages: [{ role: "system", content: moodPrompt }, ...messages],
   });
 
