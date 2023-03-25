@@ -32,14 +32,14 @@ export default function Chat({ messages, busy, onClear }: ChatProps) {
     <div className="relative flex flex-col flex-1 overflow-hidden">
       <div
         ref={wrapperRef}
-        className="flex-1 overflow-auto overflow-[overlay] pb-8"
+        className="flex flex-col flex-1 overflow-auto overflow-[overlay] pb-8"
       >
-        <ul className="grid justify-center pb-12 sm:px-8">
+        <ul className="grid pb-12 sm:px-8 w-chat self-center">
           {messages.map(({ content, role }, index) => (
             <li
               key={index}
               className={clsx(
-                "flex p-2 sm:p-4 sm:rounded-lg max-w-screen-md",
+                "flex p-2 sm:p-4 sm:rounded-lg",
                 role === "user" ? "bg-user" : "bg-assistant"
               )}
             >

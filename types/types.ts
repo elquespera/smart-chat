@@ -14,7 +14,8 @@ export type IconType =
   | "close"
   | "computer"
   | "user"
-  | "chat";
+  | "chat"
+  | "menu";
 
 export interface LocalStorageData {
   chat?: ChatData;
