@@ -119,7 +119,7 @@ export default function Main() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-8 justify-center min-h-full p-4">
+          <div className="flex flex-col items-center gap-8 justify-center min-h-full min-w-full p-4">
             <p className="text-center">
               You need to be authorized to use SmartChat.
             </p>
