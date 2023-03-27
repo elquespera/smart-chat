@@ -10,7 +10,6 @@ export function checkRequest(
   if (!userId) throw new HTTPError("Not authorized", 401);
 
   const method = req.method || "GET";
-  console.log(req.url, method, allowedMethods);
 
   const methods = Array.isArray(allowedMethods)
     ? allowedMethods
@@ -27,6 +26,7 @@ export function checkRequest(
 }
 
 export function checkHTTPError(res: NextApiResponse, error: unknown) {
+  console.error(error);
   if (error instanceof HTTPError) {
     res
       .status(error.statusCode)

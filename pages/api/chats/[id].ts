@@ -3,11 +3,11 @@ import { DeleteResponse, ErrorResponse } from "types";
 import prisma from "lib/prisma";
 import { checkRequest, checkHTTPError } from "lib/checkRequest";
 import { HTTPError } from "lib/httpError";
-import { Chat } from "@prisma/client";
+import { Message } from "@prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<DeleteResponse | ErrorResponse | Chat>
+  res: NextApiResponse<DeleteResponse | ErrorResponse | Message[]>
 ) {
   try {
     const [method, userId] = checkRequest(req, ["GET", "DELETE"]);
@@ -16,12 +16,18 @@ export default async function handler(
     if (Array.isArray(id)) id = id[0];
     if (!id) throw new HTTPError("Chat id is not valid", 400);
 
-    const chat = await prisma.chat.findFirst({ where: { userId, id } });
+    const chat = await prisma.chat.findFirst({
+      where: { userId, id },
+    });
 
     if (!chat) throw new HTTPError(`The chat with id '${id}' not found`, 404);
 
     if (method === "GET") {
-      res.status(200).json(chat);
+      const messages = await prisma.chat.findFirst({
+        where: { userId, id },
+        select: { messages: true },
+      });
+      res.status(200).json(messages?.messages || []);
     } else {
       await prisma.chat.deleteMany({ where: { userId, id: chat.id } });
       const messages = await prisma.message.deleteMany({
@@ -35,7 +41,7 @@ export default async function handler(
       }
     }
   } catch (error) {
-    console.log("delete error", error);
+    console.error(error);
     checkHTTPError(res, error);
   }
 }

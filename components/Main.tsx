@@ -1,12 +1,13 @@
 import { useAuth } from "@clerk/nextjs";
-import axios from "axios";
+import { Chat, Message } from "@prisma/client";
+import axios, { AxiosResponse } from "axios";
 import clsx from "clsx";
-import Chat from "components/Chat";
+import MessageList from "components/MessageList";
 import Input from "components/Input";
 import { getLocalStorage, setLocalStorage } from "lib/storage";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { ChatData, ChatRole, MessageData } from "types";
+import { ChatWithMessages, DeleteResponse } from "types";
 import ChatList from "./ChatList";
 import Header from "./Header";
 import Settings from "./Settings";
@@ -14,30 +15,23 @@ import SignInOrUpButton from "./SignInOrUpButton";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatData>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [fetching, setFetching] = useState(false);
   const [mood, setMood] = useState<string>();
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatId, setChatId] = useState<string>();
 
   const { userId } = useAuth();
-  const { slug } = useRouter().query;
-
-  const addMessage = (content: string, role: ChatRole) => {
-    setMessages((current) => {
-      const newMessages = [...current, { role, content }];
-      setLocalStorage({ chat: newMessages });
-      return newMessages;
-    });
-  };
+  const router = useRouter();
+  const { slug } = router.query;
 
   const handleSend = (message: string) => {
-    addMessage(message, "user");
+    updateChat(chatId, message);
   };
 
   const handleClearChat = () => {
-    setMessages([]);
-    setLocalStorage({ chat: [] });
+    router.push("/");
   };
 
   const handleSettings = () => {
@@ -49,37 +43,74 @@ export default function Main() {
     setLocalStorage({ mood: newMood });
   };
 
-  useEffect(() => {
-    const fetchChat = async () => {
-      if (fetching) return;
-      if (messages[messages.length - 1]?.role !== "user") return;
+  const updateChat = async (chatId?: string, message?: string) => {
+    try {
+      setFetching(true);
 
-      try {
-        setFetching(true);
-        const response = await axios.post<MessageData>("api/chat/", messages, {
-          params: { mood },
-        });
-        addMessage(response.data.content, response.data.role);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setFetching(false);
+      let response: AxiosResponse<ChatWithMessages> | undefined;
+
+      response = await axios.post<ChatWithMessages>(
+        "api/message/",
+        { message },
+        {
+          params: { chatId },
+        }
+      );
+
+      const chat = response.data;
+      if (chatId !== chat.id) {
+        router.push(`/${chat.id}`);
+      } else {
+        setMessages(chat.messages);
       }
-    };
 
-    fetchChat();
-    setSettingsOpen(false);
-  }, [messages]);
+      response = await axios.post<ChatWithMessages>("api/message/", null, {
+        params: { chatId, mood },
+      });
+      setMessages(response.data.messages || []);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const loadMessages = async (chatId?: string, userId?: string | null) => {
+    if (chatId && userId) {
+      const response = await axios.get<Message[]>(`api/chats/${chatId}`);
+      setMessages(response.data);
+    } else {
+      setMessages([]);
+    }
+  };
+
+  const loadChats = async (userId?: string | null) => {
+    if (userId) {
+      const response = await axios.get<Chat[]>("api/chats/");
+      setChats(response.data);
+    } else {
+      setChats([]);
+    }
+  };
+
+  const deleteChat = async (id: string) => {
+    const response = await axios.delete<DeleteResponse>(`api/chats/${id}`);
+    if (response.status === 204) {
+      loadChats(userId);
+    }
+  };
 
   useEffect(() => {
     setChatId(Array.isArray(slug) ? slug[0] : slug);
   }, [slug]);
 
   useEffect(() => {
-    const { chat, mood } = getLocalStorage();
-    if (chat) setMessages(chat);
-    setMood(mood);
-  }, []);
+    loadChats(userId);
+  }, [userId]);
+
+  useEffect(() => {
+    loadMessages(chatId, userId);
+  }, [chatId, userId]);
 
   return (
     <>
@@ -98,9 +129,9 @@ export default function Main() {
             )}
             onClick={() => setMenuOpen(false)}
           >
-            <ChatList open={menuOpen} />
+            <ChatList chats={chats} open={menuOpen} onChatDelete={deleteChat} />
             <div className="flex flex-col flex-grow">
-              <Chat
+              <MessageList
                 messages={messages}
                 busy={fetching}
                 onClear={handleClearChat}

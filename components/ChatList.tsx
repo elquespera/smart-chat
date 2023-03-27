@@ -1,15 +1,23 @@
+import { Chat } from "@prisma/client";
 import clsx from "clsx";
-import ClickAwayListener from "react-click-away-listener";
+import Link from "next/link";
+import IconButton from "./IconButton";
 
 interface ChatListProps {
+  chats: Chat[];
   open?: boolean;
+  onChatDelete?: (id: string) => void;
 }
 
-export default function ChatList({ open }: ChatListProps) {
+export default function ChatList({ chats, open, onChatDelete }: ChatListProps) {
+  const handleChatDelete = (id: string) => {
+    if (onChatDelete) onChatDelete(id);
+  };
+
   return (
     <div
       className={clsx(
-        `absolute top-0 z-10  
+        `absolute top-0 z-10 p-4
          sm:relative flex-shrink-0
          w-side-menu h-full
          transition-transform sm:transition-none
@@ -17,7 +25,18 @@ export default function ChatList({ open }: ChatListProps) {
         !open && "-translate-x-[100%] sm:translate-x-0"
       )}
     >
-      List of chats
+      <ul>
+        {chats.map(({ title, id }) => (
+          <li key={id} className="relative flex items-center">
+            <Link href={`/${id}`}>{title}</Link>
+            <IconButton
+              icon="close"
+              className="absolute right-0"
+              onClick={() => handleChatDelete(id)}
+            />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
