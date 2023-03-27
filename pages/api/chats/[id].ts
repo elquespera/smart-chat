@@ -29,12 +29,11 @@ export default async function handler(
       });
       res.status(200).json(messages?.messages || []);
     } else {
-      await prisma.chat.deleteMany({ where: { userId, id: chat.id } });
-      const messages = await prisma.message.deleteMany({
-        where: { chatId: chat.id },
+      const result = await prisma.chat.deleteMany({
+        where: { id: chat.id, userId },
       });
 
-      if (chat && messages) {
+      if (result.count > 0) {
         res
           .status(204)
           .json({ message: "Successfully deleted chat", code: 204 });

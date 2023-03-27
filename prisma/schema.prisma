@@ -12,8 +12,8 @@ model Message {
   id      Int      @id @default(autoincrement())
   role    ChatRole
   content String   @db.Text
-  chatId  String
-  chat    Chat     @relation(fields: [chatId], references: [id])
+  chatId  String?
+  chat    Chat?    @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
 
 model Chat {

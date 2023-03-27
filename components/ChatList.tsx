@@ -30,25 +30,26 @@ export default function ChatList({ chats, open, onChatDelete }: ChatListProps) {
     >
       <ul className="flex flex-col gap-1">
         {chats.map(({ title, id }) => (
-          <li key={id}>
+          <li
+            key={id}
+            className={clsx(
+              "relative flex gap-1 overflow-hidden isolate rounded-md p-2 w-full bg-background hover:text-contrast hover:bg-primary",
+              asPath === `/${id}` &&
+                "before:absolute before:inset-0 before:bg-primary before:opacity-10 before:-z-10"
+            )}
+          >
             <Link
               href={`/${id}`}
-              className={clsx(
-                "relative flex gap-1 overflow-hidden isolate rounded-md p-2 w-full bg-background hover:text-contrast hover:bg-primary",
-                asPath === `/${id}` &&
-                  "before:absolute before:inset-0 before:bg-primary before:opacity-10 before:-z-10"
-              )}
+              className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis"
             >
-              <span className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis">
-                {title}
-              </span>
-              <IconButton
-                icon="close"
-                className="flex-shrink-0"
-                title="Delete chat"
-                onClick={() => handleChatDelete(id)}
-              />
+              <span>{title}</span>
             </Link>
+            <IconButton
+              icon="close"
+              className="flex-shrink-0"
+              title="Delete chat"
+              onClick={() => handleChatDelete(id)}
+            />
           </li>
         ))}
       </ul>
