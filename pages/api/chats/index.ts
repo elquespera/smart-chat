@@ -9,7 +9,7 @@ export default async function handler(
   res: NextApiResponse<Chat[] | ErrorResponse>
 ) {
   try {
-    const userId = checkRequest(req);
+    const [, userId] = checkRequest(req);
 
     const chats = await prisma.chat.findMany({ where: { userId } });
 

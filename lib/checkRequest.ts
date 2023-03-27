@@ -20,7 +20,7 @@ export function checkRequest(
     );
   }
 
-  return userId;
+  return [method, userId];
 }
 
 export function checkHTTPError(res: NextApiResponse, error: unknown) {
