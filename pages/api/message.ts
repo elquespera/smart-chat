@@ -86,8 +86,10 @@ export default async function handler(
         }),
       ]);
 
-      const title = description.data.choices?.[0].message?.content;
       const msg = result.data.choices?.[0].message?.content;
+      let title = description.data.choices?.[0].message?.content;
+
+      if (title && title[title.length - 1] === ".") title = title.slice(0, -1);
 
       if (msg)
         response = await addMessageToChat(msg, "ASSISTANT", chatId, title);
