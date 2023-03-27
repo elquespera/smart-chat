@@ -12,6 +12,7 @@ import ChatList from "./ChatList";
 import Header from "./Header";
 import Settings from "./Settings";
 import SignInOrUpButton from "./SignInOrUpButton";
+import Welcome from "./Welcome";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -154,17 +155,7 @@ export default function Main() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-8 justify-center min-h-full min-w-full p-4">
-            <p className="text-center">
-              You need to be authorized to use SmartChat.
-            </p>
-            <SignInOrUpButton signIn />
-            <p className="text-center">
-              Don&apos;t have an account yet? Create one here or log in using
-              Google, Github and others.
-            </p>
-            <SignInOrUpButton />
-          </div>
+          <Welcome />
         )}
       </main>
     </>
