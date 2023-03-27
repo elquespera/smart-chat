@@ -9,11 +9,14 @@ export function checkRequest(
   const { userId } = getAuth(req);
   if (!userId) throw new HTTPError("Not authorized", 401);
 
-  const { method } = req;
-  if (
-    method !== allowedMethods ||
-    (Array.isArray(allowedMethods) && !allowedMethods.includes(method))
-  ) {
+  const method = req.method || "GET";
+  console.log(req.url, method, allowedMethods);
+
+  const methods = Array.isArray(allowedMethods)
+    ? allowedMethods
+    : [allowedMethods];
+
+  if (!methods.includes(method)) {
     throw new HTTPError(
       `Method ${method} is not allowed. Allowed methods are: ${allowedMethods.toString()}`,
       405
