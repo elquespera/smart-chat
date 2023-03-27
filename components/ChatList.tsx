@@ -32,7 +32,7 @@ export default function ChatList({ chats, open, onChatDelete }: ChatListProps) {
             <IconButton
               icon="close"
               className="absolute right-0"
-              onClick={() => handleChatDelete(id)}
+              onClick={() => handleChatDelete(String(id))}
             />
           </li>
         ))}
