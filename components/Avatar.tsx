@@ -1,4 +1,5 @@
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
 import Icon from "./Icon";
 
 interface AvatarProps {
@@ -12,7 +13,13 @@ export default function Avatar({ user }: AvatarProps) {
   return (
     <div className="flex items-center justify-center w-8 h-8">
       {user && imageUrl ? (
-        <img src={imageUrl} width="100%" className="rounded-full" />
+        <Image
+          src={imageUrl}
+          alt={currentUser?.user?.fullName || ""}
+          width="100"
+          height="100"
+          className="rounded-full"
+        />
       ) : (
         <Icon
           type={user ? "user" : "computer"}
