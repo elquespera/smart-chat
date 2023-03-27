@@ -123,13 +123,13 @@ export default function Main() {
         menuOpen={menuOpen}
         onMenuClick={() => setMenuOpen((current) => !current)}
       />
-      <main className="relative isolate h-[100dvh] pt-header flex">
+      <main className="relative isolate h-[100dvh] pt-header">
         {userId ? (
           <div
             className={clsx(
-              "relative flex flex-grow",
+              "relative flex h-full",
               menuOpen &&
-                "after:absolute after:inset-0 after:bg-background after:opacity-70 sm:after:hidden"
+                "after:absolute after:inset-0 after:bg-background after:opacity-80 sm:after:hidden"
             )}
             onClick={() => setMenuOpen(false)}
           >

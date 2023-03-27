@@ -28,7 +28,7 @@ export default function ChatList({ chats, open, onChatDelete }: ChatListProps) {
         !open && "-translate-x-[100%] sm:translate-x-0"
       )}
     >
-      <ul className="flex flex-col gap-1">
+      <ul className="flex flex-col gap-1 h-full">
         {chats.map(({ title, id }) => (
           <li
             key={id}

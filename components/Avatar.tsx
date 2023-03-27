@@ -11,7 +11,7 @@ export default function Avatar({ user }: AvatarProps) {
   const imageUrl = currentUser.user?.profileImageUrl;
 
   return (
-    <div className="flex items-center justify-center w-8 h-8">
+    <div className="flex items-center justify-center flex-shrink-0 w-8 h-8">
       {user && imageUrl ? (
         <Image
           src={imageUrl}
@@ -21,10 +21,7 @@ export default function Avatar({ user }: AvatarProps) {
           className="rounded-full"
         />
       ) : (
-        <Icon
-          type={user ? "user" : "computer"}
-          className="flex-shrink-0 text-2xl"
-        />
+        <Icon type={user ? "user" : "computer"} className="text-2xl" />
       )}
     </div>
   );

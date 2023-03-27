@@ -34,16 +34,13 @@ export default function MessageList({
 
   return (
     <div className="relative flex flex-col flex-1 overflow-hidden">
-      <div
-        ref={wrapperRef}
-        className="flex flex-col flex-1 overflow-auto overflow-[overlay] pb-8"
-      >
+      <div ref={wrapperRef} className="flex flex-col overflow-auto pb-8">
         <ul className="grid pb-12 sm:px-8 w-chat self-center">
           {messages.map(({ content, role, id }) => (
             <li
               key={id}
               className={clsx(
-                "flex p-2 sm:p-4 sm:rounded-lg gap-2",
+                "flex p-2 sm:p-4 sm:rounded-lg gap-2 overflow-hidden ",
                 role === "USER" ? "bg-user" : "bg-assistant"
               )}
             >
