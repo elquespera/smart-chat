@@ -97,6 +97,7 @@ export default function Main() {
     const response = await axios.delete<DeleteResponse>(`api/chats/${id}`);
     if (response.status === 204) {
       loadChats(userId);
+      router.push("/");
     }
   };
 
