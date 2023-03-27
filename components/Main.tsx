@@ -12,6 +12,8 @@ import ChatList from "./ChatList";
 import Header from "./Header";
 import Settings from "./Settings";
 import Welcome from "./Welcome";
+import Spinner from "./Spinner";
+import CenteredBox from "./CenteredBox";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -22,7 +24,7 @@ export default function Main() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatId, setChatId] = useState<string>();
 
-  const { userId } = useAuth();
+  const { userId, isLoaded } = useAuth();
   const router = useRouter();
   const { slug } = router.query;
 
@@ -140,7 +142,7 @@ export default function Main() {
               onChatDelete={deleteChat}
               onNewChat={handleClearChat}
             />
-            <div className="flex flex-col flex-grow overflow-hidden">
+            <div className="flex flex-col flex-grow overflow-auto">
               <MessageList messages={messages} busy={fetching} />
               <Settings
                 open={settingsOpen}
@@ -155,8 +157,12 @@ export default function Main() {
               />
             </div>
           </div>
-        ) : (
+        ) : isLoaded ? (
           <Welcome />
+        ) : (
+          <CenteredBox>
+            <Spinner />
+          </CenteredBox>
         )}
       </main>
     </>

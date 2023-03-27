@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import Avatar from "./Avatar";
-import Button from "./Button";
 import Spinner from "./Spinner";
 
 interface MessageListProps {
@@ -53,7 +52,7 @@ export default function MessageList({ messages, busy }: MessageListProps) {
           )}
         </ul>
       ) : (
-        <div className="flex items-center justify-center p-4 pt-8">
+        <div className="flex items-center justify-center p-4 pt-2">
           <p>
             Type your question below to start a new chat or select from saved
             chats.
