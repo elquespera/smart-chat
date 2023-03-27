@@ -15,5 +15,5 @@ export const middleware = withClerkMiddleware((request: NextRequest) => {
 });
 
 export const config = {
-  matcher: ["/api/chat"],
+  matcher: ["/api/chat", "/api/chats/:id*", "/api/message"],
 };
