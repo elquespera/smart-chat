@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .markdown {
+    ol {
+      @apply list-decimal;
+    }
+    ul {
+      @apply list-disc;
+    }
+
+    p,
+    ul,
+    li,
+    pre {
+      @apply mb-4 last-of-type:mb-0;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { Message } from "@prisma/client";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import Avatar from "./Avatar";
 import Button from "./Button";
 
@@ -46,9 +47,9 @@ export default function MessageList({
                 )}
               >
                 <Avatar user={role === "USER"} />
-                <pre className="whitespace-pre-wrap font-sans pt-1">
-                  {content}
-                </pre>
+                <div className="markdown">
+                  <ReactMarkdown>{content}</ReactMarkdown>
+                </div>
               </li>
             ))}
             {busy && <li className="text-center">Thinking...</li>}
