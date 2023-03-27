@@ -1,17 +1,20 @@
+import { Message } from "@prisma/client";
 import clsx from "clsx";
 import { useEffect, useRef } from "react";
-import { ChatData } from "types";
 import Avatar from "./Avatar";
 import Button from "./Button";
-import Icon from "./Icon";
 
-interface ChatProps {
-  messages: ChatData;
+interface MessageListProps {
+  messages: Message[];
   busy?: boolean;
   onClear?: () => void;
 }
 
-export default function Chat({ messages, busy, onClear }: ChatProps) {
+export default function MessageList({
+  messages,
+  busy,
+  onClear,
+}: MessageListProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleClear = () => {
@@ -36,15 +39,15 @@ export default function Chat({ messages, busy, onClear }: ChatProps) {
         className="flex flex-col flex-1 overflow-auto overflow-[overlay] pb-8"
       >
         <ul className="grid pb-12 sm:px-8 w-chat self-center">
-          {messages.map(({ content, role }, index) => (
+          {messages.map(({ content, role, id }) => (
             <li
-              key={index}
+              key={id}
               className={clsx(
                 "flex p-2 sm:p-4 sm:rounded-lg gap-2",
-                role === "user" ? "bg-user" : "bg-assistant"
+                role === "USER" ? "bg-user" : "bg-assistant"
               )}
             >
-              <Avatar user={role === "user"} />
+              <Avatar user={role === "USER"} />
               <pre className="whitespace-pre-wrap font-sans pt-1">
                 {content}
               </pre>
