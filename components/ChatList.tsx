@@ -53,6 +53,7 @@ export default function ChatList({
           >
             <Link
               href={`/${id}`}
+              title={title}
               className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis"
             >
               <span>{title}</span>
