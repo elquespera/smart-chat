@@ -41,7 +41,7 @@ export default async function handler(
 
       if (!chatId) {
         const chat = await prisma.chat.create({
-          data: { title: "New Chat", userId },
+          data: { title: message, userId },
         });
         currentChatId = chat.id;
       }
@@ -66,15 +66,31 @@ export default async function handler(
         } as const;
       });
 
-      const result = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        user: userId,
-        messages: [{ role: "system", content: moodPrompt }, ...messages],
-      });
+      const [result, description] = await Promise.all([
+        openai.createChatCompletion({
+          model: "gpt-3.5-turbo",
+          user: userId,
+          messages: [{ role: "system", content: moodPrompt }, ...messages],
+        }),
+        openai.createChatCompletion({
+          model: "gpt-3.5-turbo",
+          user: userId,
+          messages: [
+            ...messages,
+            {
+              role: "system",
+              content:
+                "Give this conversation a short descriptive title. Use the language of the original conversation. Don't use punctuation at the end of the title.",
+            },
+          ],
+        }),
+      ]);
 
-      const msg = result.data.choices?.[0].message;
+      const title = description.data.choices?.[0].message?.content;
+      const msg = result.data.choices?.[0].message?.content;
+
       if (msg)
-        response = await addMessageToChat(msg.content, "ASSISTANT", chatId);
+        response = await addMessageToChat(msg, "ASSISTANT", chatId, title);
     }
 
     if (!response) throw new HTTPError("Chat not found", 400);
@@ -88,11 +104,13 @@ export default async function handler(
 async function addMessageToChat(
   content: string,
   role: ChatRole,
-  chatId?: string
+  chatId?: string,
+  title?: string
 ) {
   return prisma.chat.update({
     where: { id: chatId },
     data: {
+      title,
       messages: {
         create: {
           content,

@@ -63,11 +63,14 @@ export default function Main() {
       } else {
         setMessages(chat.messages);
       }
+      loadChats(userId);
 
       response = await axios.post<ChatWithMessages>("api/message/", null, {
-        params: { chatId, mood },
+        params: { chatId: chat.id, mood },
       });
+
       setMessages(response.data.messages || []);
+      loadChats(userId);
     } catch (error) {
       console.error(error);
     } finally {

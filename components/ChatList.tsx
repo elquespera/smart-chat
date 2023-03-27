@@ -34,12 +34,14 @@ export default function ChatList({ chats, open, onChatDelete }: ChatListProps) {
             <Link
               href={`/${id}`}
               className={clsx(
-                "relative overflow-hidden isolate rounded-md flex p-2 w-full bg-background hover:text-contrast hover:bg-primary",
+                "relative flex gap-1 overflow-hidden isolate rounded-md p-2 w-full bg-background hover:text-contrast hover:bg-primary",
                 asPath === `/${id}` &&
                   "before:absolute before:inset-0 before:bg-primary before:opacity-10 before:-z-10"
               )}
             >
-              <span className="flex-grow">{title}</span>
+              <span className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis">
+                {title}
+              </span>
               <IconButton
                 icon="close"
                 className="flex-shrink-0"
