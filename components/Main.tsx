@@ -11,7 +11,6 @@ import { ChatWithMessages, DeleteResponse } from "types";
 import ChatList from "./ChatList";
 import Header from "./Header";
 import Settings from "./Settings";
-import SignInOrUpButton from "./SignInOrUpButton";
 import Welcome from "./Welcome";
 
 export default function Main() {
@@ -124,23 +123,25 @@ export default function Main() {
         menuOpen={menuOpen}
         onMenuClick={() => setMenuOpen((current) => !current)}
       />
-      <main className="relative isolate h-[100dvh] pt-header">
+      <main className="relative isolate h-[100dvh] w-[100vw] pt-header">
         {userId ? (
           <div
             className={clsx(
-              "relative flex h-full",
+              "relative flex h-full w-full",
               menuOpen &&
                 "after:absolute after:inset-0 after:bg-background after:opacity-80 sm:after:hidden"
             )}
             onClick={() => setMenuOpen(false)}
           >
-            <ChatList chats={chats} open={menuOpen} onChatDelete={deleteChat} />
-            <div className="flex flex-col flex-grow">
-              <MessageList
-                messages={messages}
-                busy={fetching}
-                onClear={handleClearChat}
-              />
+            <ChatList
+              chats={chats}
+              open={menuOpen}
+              newChatVisible={messages.length > 0}
+              onChatDelete={deleteChat}
+              onNewChat={handleClearChat}
+            />
+            <div className="flex flex-col flex-grow overflow-hidden">
+              <MessageList messages={messages} busy={fetching} />
               <Settings
                 open={settingsOpen}
                 mood={mood}
