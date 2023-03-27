@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import Avatar from "./Avatar";
 import Button from "./Button";
+import Spinner from "./Spinner";
 
 interface MessageListProps {
   messages: Message[];
@@ -45,7 +46,11 @@ export default function MessageList({ messages, busy }: MessageListProps) {
               </div>
             </li>
           ))}
-          {busy && <li className="text-center">Thinking...</li>}
+          {busy && (
+            <li className="flex justify-center p-4">
+              <Spinner />
+            </li>
+          )}
         </ul>
       ) : (
         <div className="flex items-center justify-center p-4 pt-8">
