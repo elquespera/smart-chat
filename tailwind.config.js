@@ -16,6 +16,7 @@ module.exports = {
         primary: "#000",
         background: "#fff",
         contrast: "#fff",
+        highlight: "#eee",
         "background-tranparent": "#fff0",
         divider: "#bbb",
         user: "#f5f5f5",

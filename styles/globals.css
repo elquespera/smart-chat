@@ -5,17 +5,30 @@
 @layer components {
   .markdown {
     ol {
-      @apply list-decimal;
+      @apply list-decimal ml-6;
     }
     ul {
-      @apply list-disc;
+      @apply list-disc ml-6;
     }
 
     p,
     ul,
-    li,
     pre {
       @apply mb-4 last-of-type:mb-0;
+    }
+    li {
+      @apply mb-2;
+    }
+
+    pre {
+      @apply bg-highlight p-4 rounded-lg;
+      code {
+        @apply bg-transparent rounded-none p-0;
+      }
+    }
+
+    code {
+      @apply bg-highlight rounded-md p-[0.12em];
     }
   }
 }
