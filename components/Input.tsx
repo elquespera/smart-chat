@@ -48,7 +48,7 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
   return (
     <label className="flex items-center justify-center px-4 py-3 gap-2 border-t border-divider">
       <textarea
-        className="w-full outline-none overflow-y-hidden resize-none max-w-screen-md"
+        className="w-full outline-none overflow-y-hidden resize-none max-w-screen-md bg-transparent"
         rows={lines}
         ref={inputRef}
         value={message}

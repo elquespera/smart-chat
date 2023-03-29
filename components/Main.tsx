@@ -15,6 +15,7 @@ import Welcome from "./Welcome";
 import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
 import { DEFAULT_SETTINGS } from "consts";
+import { setTheme } from "lib/theme";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -98,8 +99,12 @@ export default function Main() {
   const loadChats = async () => {
     try {
       setChatFetching(true);
-      const response = await axios.get<Chat[]>("api/chats/");
-      setChats(response.data);
+      if (userId) {
+        const response = await axios.get<Chat[]>("api/chats/");
+        setChats(response.data);
+      } else {
+        setChats([]);
+      }
     } finally {
       setChatFetching(false);
     }
@@ -144,6 +149,10 @@ export default function Main() {
   useEffect(() => {
     loadMessages(chatId);
   }, [chatId, userId]);
+
+  useEffect(() => {
+    setTheme(userSettings.theme);
+  }, [userSettings]);
 
   return (
     <>

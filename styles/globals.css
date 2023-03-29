@@ -32,3 +32,28 @@
     }
   }
 }
+
+:root {
+  --clr-primary: #000;
+  --clr-background: #fff;
+  --clr-contrast: #fff;
+  --clr-highlight: #eee;
+  --clr-divider: #bbb;
+  --clr-user: #f5f5f5;
+  --clr-assistant: #fff;
+}
+
+body {
+  color: var(--clr-primary);
+  background-color: var(--clr-background);
+}
+
+body.dark {
+  --clr-primary: #eee;
+  --clr-background: #000;
+  --clr-contrast: #000;
+  --clr-highlight: #eee;
+  --clr-divider: #666;
+  --clr-user: #1f1f1f;
+  --clr-assistant: #000;
+}
