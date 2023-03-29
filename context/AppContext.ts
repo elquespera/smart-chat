@@ -27,11 +27,15 @@ export function useAppContext() {
     setLanguage,
   });
 
-  function setTheme(newTheme?: AppTheme | null) {
-    const theme = newTheme || "light";
+  function setAppTheme(theme: AppTheme) {
     document.body.classList.toggle("dark", theme === "dark");
     const meta = document.querySelector("meta[name=theme-color]");
     if (meta) meta.setAttribute("content", theme === "dark" ? "#000" : "#fff");
+  }
+
+  function setTheme(newTheme?: AppTheme | null) {
+    const theme = newTheme || "light";
+    setAppTheme(theme);
     saveSettings({ theme });
     setAppContext((current) => {
       return { ...current, theme: theme || "light" };
@@ -42,7 +46,6 @@ export function useAppContext() {
     const language = lang || "en";
     saveSettings({ language });
     setAppContext((current) => {
-      saveSettings({});
       return { ...current, language };
     });
   }
@@ -52,18 +55,22 @@ export function useAppContext() {
   }
 
   useEffect(() => {
+    const theme = matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+
     setAppContext((current) => {
       return {
         ...current,
-        theme: matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light",
+        theme,
         language:
           Object.values(AppLanguage).find((lang) =>
             navigator.language.startsWith(lang)
           ) || "en",
       };
     });
+
+    setAppTheme(theme);
   }, []);
 
   return appContext;
