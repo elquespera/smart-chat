@@ -18,6 +18,7 @@
       "components/*": ["./components/*"],
       "lib/*": ["./lib/*"],
       "types": ["./types/types.ts"],
+      "context/*": ["./context/*"],
       "consts": ["./consts/consts.ts"],
       "@/*": ["./*"]
     }

@@ -28,7 +28,7 @@ export default async function handler(
         });
       } else {
         result = await prisma.userSettings.create({
-          data: { ...settings, userId },
+          data: { ...settings, userId, id: undefined },
         });
       }
     }

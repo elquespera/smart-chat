@@ -4,7 +4,6 @@ import axios, { AxiosResponse } from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
 import Input from "components/Input";
-// import { setLocalStorage } from "lib/storage";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ChatWithMessages, DeleteResponse } from "types";
@@ -15,7 +14,8 @@ import Welcome from "./Welcome";
 import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
 import { DEFAULT_SETTINGS } from "consts";
-import { setTheme } from "lib/theme";
+import { useContext } from "react";
+import { AppContext } from "context/AppContext";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -29,9 +29,9 @@ export default function Main() {
   const [mood, setMood] = useState<string>();
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatId, setChatId] = useState<string>();
-
   const { userId, isLoaded } = useAuth();
   const router = useRouter();
+  const { setTheme } = useContext(AppContext);
   const { slug } = router.query;
 
   const handleSend = (message: string) => {
@@ -157,7 +157,6 @@ export default function Main() {
   return (
     <>
       <Header
-        showMenuButton={!!userId}
         menuOpen={menuOpen}
         theme={userSettings.theme}
         onThemeChange={handleThemeChange}
