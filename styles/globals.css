@@ -12,10 +12,14 @@
     }
 
     p,
-    ul,
-    pre {
+    ul {
       @apply mb-4 last-of-type:mb-0;
     }
+
+    pre {
+      @apply mb-4;
+    }
+
     li {
       @apply mb-2;
     }
