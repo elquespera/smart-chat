@@ -1,10 +1,10 @@
 import { useAuth } from "@clerk/nextjs";
-import { Chat, Message } from "@prisma/client";
+import { Chat, Message, UserSettings } from "@prisma/client";
 import axios, { AxiosResponse } from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
 import Input from "components/Input";
-import { getLocalStorage, setLocalStorage } from "lib/storage";
+// import { setLocalStorage } from "lib/storage";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ChatWithMessages, DeleteResponse } from "types";
@@ -14,12 +14,17 @@ import Settings from "./Settings";
 import Welcome from "./Welcome";
 import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
+import { DEFAULT_SETTINGS } from "consts";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [userSettings, setUserSettings] =
+    useState<UserSettings>(DEFAULT_SETTINGS);
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [fetching, setFetching] = useState(false);
+  const [chatFetching, setChatFetching] = useState(false);
+  const [messageFetching, setMessageFetching] = useState(false);
   const [mood, setMood] = useState<string>();
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatId, setChatId] = useState<string>();
@@ -42,21 +47,17 @@ export default function Main() {
 
   const handleMoodChange = (newMood?: string) => {
     setMood(newMood);
-    setLocalStorage({ mood: newMood });
   };
 
   const updateChat = async (chatId?: string, message?: string) => {
     try {
       setFetching(true);
-
       let response: AxiosResponse<ChatWithMessages> | undefined;
 
       response = await axios.post<ChatWithMessages>(
         "api/message/",
         { message },
-        {
-          params: { chatId },
-        }
+        { params: { chatId } }
       );
 
       const chat = response.data;
@@ -65,14 +66,14 @@ export default function Main() {
       } else {
         setMessages(chat.messages);
       }
-      loadChats(userId);
+      loadChats();
 
       response = await axios.post<ChatWithMessages>("api/message/", null, {
         params: { chatId: chat.id, mood },
       });
 
       setMessages(response.data.messages || []);
-      loadChats(userId);
+      loadChats();
     } catch (error) {
       console.error(error);
     } finally {
@@ -80,21 +81,27 @@ export default function Main() {
     }
   };
 
-  const loadMessages = async (chatId?: string, userId?: string | null) => {
-    if (chatId && userId) {
-      const response = await axios.get<Message[]>(`api/chats/${chatId}`);
-      setMessages(response.data);
+  const loadMessages = async (chatId?: string) => {
+    if (chatId) {
+      try {
+        setMessageFetching(true);
+        const response = await axios.get<Message[]>(`api/chats/${chatId}`);
+        setMessages(response.data);
+      } finally {
+        setMessageFetching(false);
+      }
     } else {
       setMessages([]);
     }
   };
 
-  const loadChats = async (userId?: string | null) => {
-    if (userId) {
+  const loadChats = async () => {
+    try {
+      setChatFetching(true);
       const response = await axios.get<Chat[]>("api/chats/");
       setChats(response.data);
-    } else {
-      setChats([]);
+    } finally {
+      setChatFetching(false);
     }
   };
 
@@ -102,8 +109,27 @@ export default function Main() {
     const response = await axios.delete<DeleteResponse>(`api/chats/${id}`);
     if (response.status === 204) {
       if (id === chatId) router.push("/");
-      loadChats(userId);
+      loadChats();
     }
+  };
+
+  const loadSettings = async () => {
+    if (userId) {
+      const response = await axios.get<UserSettings>("api/settings");
+      setUserSettings(response.data);
+    } else {
+      setUserSettings(DEFAULT_SETTINGS);
+    }
+  };
+
+  const saveSettings = async (newSettings: Partial<UserSettings>) => {
+    const settings = { ...userSettings, ...newSettings };
+    setUserSettings(settings);
+    axios.put<UserSettings>("api/settings", { settings });
+  };
+
+  const handleThemeChange = () => {
+    saveSettings({ theme: userSettings.theme === "light" ? "dark" : "light" });
   };
 
   useEffect(() => {
@@ -111,11 +137,12 @@ export default function Main() {
   }, [slug]);
 
   useEffect(() => {
-    loadChats(userId);
+    loadChats();
+    loadSettings();
   }, [userId]);
 
   useEffect(() => {
-    loadMessages(chatId, userId);
+    loadMessages(chatId);
   }, [chatId, userId]);
 
   return (
@@ -123,6 +150,8 @@ export default function Main() {
       <Header
         showMenuButton={!!userId}
         menuOpen={menuOpen}
+        theme={userSettings.theme}
+        onThemeChange={handleThemeChange}
         onMenuClick={() => setMenuOpen((current) => !current)}
       />
       <main className="relative isolate h-[100dvh] w-[100vw] pt-header">
@@ -138,12 +167,19 @@ export default function Main() {
             <ChatList
               chats={chats}
               open={menuOpen}
+              busy={chatFetching}
               newChatVisible={messages.length > 0}
               onChatDelete={deleteChat}
               onNewChat={handleClearChat}
             />
             <div className="flex flex-col flex-grow overflow-auto">
-              <MessageList messages={messages} busy={fetching} />
+              {messageFetching ? (
+                <CenteredBox>
+                  <Spinner />
+                </CenteredBox>
+              ) : (
+                <MessageList messages={messages} busy={fetching} />
+              )}
               <Settings
                 open={settingsOpen}
                 mood={mood}

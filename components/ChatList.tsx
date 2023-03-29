@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Button from "./Button";
 import IconButton from "./IconButton";
+import Spinner from "./Spinner";
 
 interface ChatListProps {
   chats: Chat[];
   open?: boolean;
+  busy?: boolean;
   newChatVisible?: boolean;
   onChatDelete?: (id: string) => void;
   onNewChat?: () => void;
@@ -16,6 +18,7 @@ interface ChatListProps {
 export default function ChatList({
   chats,
   open,
+  busy,
   onChatDelete,
   newChatVisible,
   onNewChat,
@@ -39,6 +42,7 @@ export default function ChatList({
         !open && "-translate-x-[100%] sm:translate-x-0"
       )}
     >
+      {busy && <Spinner center />}
       <ul className="flex flex-col gap-1 overflow-hidden overflow-y-auto">
         {chats.map(({ title, id }) => (
           <li

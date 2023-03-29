@@ -1,8 +1,16 @@
-interface SpinnerProps {}
+import clsx from "clsx";
 
-export default function Spinner({}: SpinnerProps) {
+interface SpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
+  center?: boolean;
+}
+
+export default function Spinner({ className, center, ...props }: SpinnerProps) {
   return (
-    <div role="status">
+    <div
+      role="status"
+      {...props}
+      className={clsx(className, center && "self-center")}
+    >
       <svg
         aria-hidden="true"
         className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-primary"
