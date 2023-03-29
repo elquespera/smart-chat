@@ -1,6 +1,8 @@
 import { AppLanguage } from "@prisma/client";
 import clsx from "clsx";
 import { ASSISTNT_MOODS } from "consts";
+import { AppContext } from "context/AppContext";
+import { useContext } from "react";
 import IconButton from "./IconButton";
 import RadioGroup from "./RadioGroup";
 
@@ -9,21 +11,24 @@ interface SettingsProps {
   onClose?: () => void;
   mood?: string;
   onMoodChange?: (mood?: string) => void;
-  language?: AppLanguage;
-  onLanguageChange?: (language?: string) => void;
 }
 
 export default function Settings({
   open,
   mood,
-  language,
   onMoodChange,
-  onLanguageChange,
   onClose,
 }: SettingsProps) {
+  const { language, setLanguage } = useContext(AppContext);
+
   const handleClose = () => {
     if (onClose) onClose();
   };
+
+  const handleLanguageChange = (language?: string) => {
+    setLanguage((language as AppLanguage) || "en");
+  };
+
   return (
     <div
       className={clsx(
@@ -47,7 +52,7 @@ export default function Settings({
       <RadioGroup
         name="app_language"
         value={language}
-        onChange={onLanguageChange}
+        onChange={handleLanguageChange}
       >
         {Object.values(AppLanguage).map((language) => (
           <RadioGroup.Item key={language} value={language}>

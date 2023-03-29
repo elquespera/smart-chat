@@ -16,16 +16,16 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.svg" />
       </Head>
-      <AppContext.Provider value={appContext}>
-        <ClerkProvider
-          {...pageProps}
-          appearance={{
-            baseTheme: appContext.theme === "dark" ? dark : undefined,
-          }}
-        >
+      <ClerkProvider
+        {...pageProps}
+        appearance={{
+          baseTheme: appContext.theme === "dark" ? dark : undefined,
+        }}
+      >
+        <AppContext.Provider value={appContext}>
           <Component {...pageProps} />
-        </ClerkProvider>
-      </AppContext.Provider>
+        </AppContext.Provider>
+      </ClerkProvider>
     </>
   );
 }

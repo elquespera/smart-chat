@@ -17,7 +17,7 @@ export const languageData: LanguageData = {
   en: {
     [lng.welcomeAuthorized]: "You need to be authorized to use SmartChat.",
     [lng.welcomeNoAccount]:
-      " Don&apos;t have an account yet? Create one here or log in using Google, Github and others.",
+      " Don't have an account yet? Create one here or log in using Google, Github and others.",
     [lng.messageEmpty]:
       "Type your question below to start a new chat or select from saved chats.",
     [lng.inputEmpty]: "Ask a question or type img: to generate an image",

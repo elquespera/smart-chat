@@ -19,12 +19,12 @@ export default async function handler(
     let result = previousSettings || DEFAULT_SETTINGS;
 
     if (method === "PUT") {
-      const { settings } = <{ settings: UserSettings }>req.body;
+      const { settings } = <{ settings: Partial<UserSettings> }>req.body;
 
       if (previousSettings) {
         result = await prisma.userSettings.update({
           where: { id: previousSettings.id },
-          data: settings,
+          data: { ...previousSettings, ...settings, userId, id: undefined },
         });
       } else {
         result = await prisma.userSettings.create({

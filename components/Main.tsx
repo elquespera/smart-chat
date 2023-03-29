@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { AppLanguage, Chat, Message, UserSettings } from "@prisma/client";
+import { Chat, Message, UserSettings } from "@prisma/client";
 import axios, { AxiosResponse } from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
@@ -13,14 +13,11 @@ import Settings from "./Settings";
 import Welcome from "./Welcome";
 import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
-import { DEFAULT_SETTINGS } from "consts";
 import { useContext } from "react";
 import { AppContext } from "context/AppContext";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [userSettings, setUserSettings] =
-    useState<UserSettings>(DEFAULT_SETTINGS);
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [fetching, setFetching] = useState(false);
@@ -121,24 +118,9 @@ export default function Main() {
   const loadSettings = async () => {
     if (userId) {
       const response = await axios.get<UserSettings>("api/settings");
-      setUserSettings(response.data);
-    } else {
-      setUserSettings(DEFAULT_SETTINGS);
+      setTheme(response.data.theme);
+      setLanguage(response.data.language);
     }
-  };
-
-  const saveSettings = async (newSettings: Partial<UserSettings>) => {
-    const settings = { ...userSettings, ...newSettings };
-    setUserSettings(settings);
-    axios.put<UserSettings>("api/settings", { settings });
-  };
-
-  const handleThemeChange = () => {
-    saveSettings({ theme: userSettings.theme === "light" ? "dark" : "light" });
-  };
-
-  const handleLanguageChange = (language?: string) => {
-    saveSettings({ language: language ? (language as AppLanguage) : "en" });
   };
 
   useEffect(() => {
@@ -154,17 +136,10 @@ export default function Main() {
     loadMessages(chatId);
   }, [chatId, userId]);
 
-  useEffect(() => {
-    setTheme(userSettings.theme);
-    setLanguage(userSettings.language);
-  }, [userSettings]);
-
   return (
     <>
       <Header
         menuOpen={menuOpen}
-        theme={userSettings.theme}
-        onThemeChange={handleThemeChange}
         onMenuClick={() => setMenuOpen((current) => !current)}
       />
       <main className="relative isolate h-[100dvh] w-[100vw] pt-header">
@@ -195,9 +170,7 @@ export default function Main() {
               <Settings
                 open={settingsOpen}
                 mood={mood}
-                language={userSettings.language || undefined}
                 onMoodChange={handleMoodChange}
-                onLanguageChange={handleLanguageChange}
                 onClose={() => setSettingsOpen(false)}
               />
               <Input

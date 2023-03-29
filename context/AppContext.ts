@@ -1,4 +1,6 @@
-import { AppLanguage, AppTheme } from "@prisma/client";
+import { AppLanguage, AppTheme, UserSettings } from "@prisma/client";
+import axios from "axios";
+import { useEffect } from "react";
 import { useState } from "react";
 import { createContext } from "react";
 
@@ -25,21 +27,44 @@ export function useAppContext() {
     setLanguage,
   });
 
-  function setTheme(theme?: AppTheme | null) {
+  function setTheme(newTheme?: AppTheme | null) {
+    const theme = newTheme || "light";
     document.body.classList.toggle("dark", theme === "dark");
     const meta = document.querySelector("meta[name=theme-color]");
     if (meta) meta.setAttribute("content", theme === "dark" ? "#000" : "#fff");
-    console.log(meta);
+    saveSettings({ theme });
     setAppContext((current) => {
       return { ...current, theme: theme || "light" };
     });
   }
 
-  function setLanguage(langauge?: AppLanguage | null) {
+  function setLanguage(lang?: AppLanguage | null) {
+    const language = lang || "en";
+    saveSettings({ language });
     setAppContext((current) => {
-      return { ...current, language: langauge || "en" };
+      saveSettings({});
+      return { ...current, language };
     });
   }
+
+  async function saveSettings(settings: Partial<UserSettings>) {
+    axios.put<Partial<UserSettings>>("api/settings", { settings });
+  }
+
+  useEffect(() => {
+    setAppContext((current) => {
+      return {
+        ...current,
+        theme: matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light",
+        language:
+          Object.values(AppLanguage).find((lang) =>
+            navigator.language.startsWith(lang)
+          ) || "en",
+      };
+    });
+  }, []);
 
   return appContext;
 }

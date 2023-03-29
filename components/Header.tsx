@@ -1,23 +1,23 @@
 import { useAuth, UserButton } from "@clerk/nextjs";
 import { AppTheme } from "@prisma/client";
+import { AppContext } from "context/AppContext";
+import { useContext } from "react";
 import Icon from "./Icon";
 import IconButton from "./IconButton";
 
 interface HeaderProps {
   menuOpen?: boolean;
-  theme?: AppTheme | null;
-  onThemeChange?: () => void;
   onMenuClick?: () => void;
 }
 
-export default function Header({
-  menuOpen,
-  theme = "light",
-  onThemeChange,
-  onMenuClick,
-}: HeaderProps) {
+export default function Header({ menuOpen, onMenuClick }: HeaderProps) {
   const { userId } = useAuth();
+  const { theme, setTheme } = useContext(AppContext);
   const isAuthorized = !!userId;
+
+  const handleThemeChange = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <header
@@ -41,7 +41,7 @@ export default function Header({
         <IconButton
           className="text-2xl"
           icon={theme === "light" ? "sun" : "moon"}
-          onClick={onThemeChange}
+          onClick={handleThemeChange}
         />
       )}
       <UserButton />
