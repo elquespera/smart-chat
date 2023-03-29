@@ -1,15 +1,15 @@
+import { lng } from "assets/translations";
+import useTranslation from "hooks/useTranslation";
 import CenteredBox from "./CenteredBox";
 import SignInOrUpButton from "./SignInOrUpButton";
 
 export default function Welcome() {
+  const t = useTranslation();
   return (
     <CenteredBox className="gap-8">
-      <p className="text-center">You need to be authorized to use SmartChat.</p>
+      <p className="text-center">{t(lng.welcomeAuthorized)}</p>
       <SignInOrUpButton signIn />
-      <p className="text-center">
-        Don&apos;t have an account yet? Create one here or log in using Google,
-        Github and others.
-      </p>
+      <p className="text-center">{t(lng.welcomeNoAccount)}</p>
       <SignInOrUpButton />
     </CenteredBox>
   );

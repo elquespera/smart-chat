@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { Chat, Message, UserSettings } from "@prisma/client";
+import { AppLanguage, Chat, Message, UserSettings } from "@prisma/client";
 import axios, { AxiosResponse } from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
@@ -31,7 +31,7 @@ export default function Main() {
   const [chatId, setChatId] = useState<string>();
   const { userId, isLoaded } = useAuth();
   const router = useRouter();
-  const { setTheme } = useContext(AppContext);
+  const { setTheme, setLanguage } = useContext(AppContext);
   const { slug } = router.query;
 
   const handleSend = (message: string) => {
@@ -137,6 +137,10 @@ export default function Main() {
     saveSettings({ theme: userSettings.theme === "light" ? "dark" : "light" });
   };
 
+  const handleLanguageChange = (language?: string) => {
+    saveSettings({ language: language ? (language as AppLanguage) : "en" });
+  };
+
   useEffect(() => {
     setChatId(Array.isArray(slug) ? slug[0] : slug);
   }, [slug]);
@@ -152,6 +156,7 @@ export default function Main() {
 
   useEffect(() => {
     setTheme(userSettings.theme);
+    setLanguage(userSettings.language);
   }, [userSettings]);
 
   return (
@@ -175,7 +180,6 @@ export default function Main() {
             <ChatList
               chats={chats}
               open={menuOpen}
-              busy={chatFetching}
               newChatVisible={messages.length > 0}
               onChatDelete={deleteChat}
               onNewChat={handleClearChat}
@@ -191,7 +195,9 @@ export default function Main() {
               <Settings
                 open={settingsOpen}
                 mood={mood}
+                language={userSettings.language || undefined}
                 onMoodChange={handleMoodChange}
+                onLanguageChange={handleLanguageChange}
                 onClose={() => setSettingsOpen(false)}
               />
               <Input

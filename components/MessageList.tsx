@@ -1,5 +1,7 @@
 import { Message } from "@prisma/client";
+import { lng } from "assets/translations";
 import clsx from "clsx";
+import useTranslation from "hooks/useTranslation";
 import { useEffect, useRef } from "react";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import Avatar from "./Avatar";
@@ -12,6 +14,7 @@ interface MessageListProps {
 }
 
 export default function MessageList({ messages, busy }: MessageListProps) {
+  const t = useTranslation();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -53,10 +56,7 @@ export default function MessageList({ messages, busy }: MessageListProps) {
           )}
         </ul>
       ) : (
-        <CenteredBox>
-          Type your question below to start a new chat or select from saved
-          chats.
-        </CenteredBox>
+        <CenteredBox>{t(lng.messageEmpty)}</CenteredBox>
       )}
     </div>
   );

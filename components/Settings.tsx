@@ -1,3 +1,4 @@
+import { AppLanguage } from "@prisma/client";
 import clsx from "clsx";
 import { ASSISTNT_MOODS } from "consts";
 import IconButton from "./IconButton";
@@ -8,12 +9,16 @@ interface SettingsProps {
   onClose?: () => void;
   mood?: string;
   onMoodChange?: (mood?: string) => void;
+  language?: AppLanguage;
+  onLanguageChange?: (language?: string) => void;
 }
 
 export default function Settings({
   open,
   mood,
+  language,
   onMoodChange,
+  onLanguageChange,
   onClose,
 }: SettingsProps) {
   const handleClose = () => {
@@ -23,7 +28,7 @@ export default function Settings({
     <div
       className={clsx(
         open ? "flex" : "hidden",
-        "flex-col p-4 border-t border-divider shadow-md"
+        "flex-col gap-4 p-4 border-t border-divider shadow-md"
       )}
     >
       <h2 className="flex items-center justify-between text-xl">
@@ -36,6 +41,17 @@ export default function Settings({
               <span>{smiley}</span>
               <span className="hidden sm:inline">{name}</span>
             </div>
+          </RadioGroup.Item>
+        ))}
+      </RadioGroup>
+      <RadioGroup
+        name="app_language"
+        value={language}
+        onChange={onLanguageChange}
+      >
+        {Object.values(AppLanguage).map((language) => (
+          <RadioGroup.Item key={language} value={language}>
+            <div>{language}</div>
           </RadioGroup.Item>
         ))}
       </RadioGroup>

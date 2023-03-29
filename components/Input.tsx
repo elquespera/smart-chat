@@ -1,3 +1,5 @@
+import { lng } from "assets/translations";
+import useTranslation from "hooks/useTranslation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import IconButton from "./IconButton";
 
@@ -8,6 +10,7 @@ interface InputProps {
 }
 
 export default function Input({ busy, onSend, onSettings }: InputProps) {
+  const t = useTranslation();
   const [message, setMessage] = useState("");
   const [valid, setValid] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -52,7 +55,7 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
         rows={lines}
         ref={inputRef}
         value={message}
-        placeholder="Ask a question"
+        placeholder={t(lng.inputEmpty)}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
       />
