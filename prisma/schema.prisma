@@ -25,6 +25,25 @@ model Chat {
   @@index([userId])
 }
 
+model UserSettings {
+  id       Int          @id @default(autoincrement())
+  language AppLanguage? @default(en)
+  theme    AppTheme?    @default(light)
+  userId   String
+
+  @@index([userId])
+}
+
+enum AppLanguage {
+  en
+  ru
+}
+
+enum AppTheme {
+  dark
+  light
+}
+
 enum ChatRole {
   USER
   ASSISTANT
