@@ -28,8 +28,8 @@ export function useAppContext() {
   function setTheme(theme?: AppTheme | null) {
     document.body.classList.toggle("dark", theme === "dark");
     const meta = document.querySelector("meta[name=theme-color]");
-    console.log(meta);
     if (meta) meta.setAttribute("content", theme === "dark" ? "#000" : "#fff");
+    console.log(meta);
     setAppContext((current) => {
       return { ...current, theme: theme || "light" };
     });
