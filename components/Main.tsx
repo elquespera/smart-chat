@@ -150,11 +150,11 @@ export default function Main() {
               menuOpen &&
                 "after:absolute after:inset-0 after:bg-background after:opacity-80 sm:after:hidden"
             )}
-            onClick={() => setMenuOpen(false)}
           >
             <ChatList
               chats={chats}
               open={menuOpen}
+              onMenuClose={() => setMenuOpen(false)}
               newChatVisible={messages.length > 0}
               onChatDelete={deleteChat}
               onNewChat={handleClearChat}

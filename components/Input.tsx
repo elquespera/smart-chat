@@ -39,6 +39,11 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
     }
   };
 
+  const handleSettingsClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (onSettings) onSettings();
+  };
+
   const handleClear = () => {
     setMessage("");
     inputRef.current?.focus();
@@ -76,7 +81,7 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
         <IconButton
           icon="settings"
           className={buttonClass}
-          onClick={onSettings}
+          onClick={handleSettingsClick}
         />
       </div>
     </label>

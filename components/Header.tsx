@@ -19,6 +19,11 @@ export default function Header({ menuOpen, onMenuClick }: HeaderProps) {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
+  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (onMenuClick) onMenuClick();
+  };
+
   return (
     <header
       className="fixed h-header w-full flex 
@@ -30,7 +35,7 @@ export default function Header({ menuOpen, onMenuClick }: HeaderProps) {
         <IconButton
           icon={menuOpen ? "close" : "menu"}
           className="text-2xl sm:hidden"
-          onClick={onMenuClick}
+          onClick={handleMenuClick}
         />
       )}
       <h2 className="flex gap-1 items-center font-bold sm:text-lg mr-auto">
