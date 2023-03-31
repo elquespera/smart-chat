@@ -14,7 +14,7 @@ export default async function handler(
 
     const chats = await prisma.chat.findMany({ where: { userId } });
 
-    res.status(200).json(decryptChats(chats, userId));
+    res.status(200).json(decryptChats(chats, userId).reverse());
   } catch (error) {
     checkHTTPError(res, error);
   }

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Chat } from "@prisma/client";
 import { lng } from "assets/translations";
 import clsx from "clsx";
@@ -13,7 +14,6 @@ interface ChatListProps {
   chats: Chat[];
   open?: boolean;
   busy?: boolean;
-  newChatVisible?: boolean;
   onMenuClose?: () => void;
   onChatDelete?: (id: string) => void;
   onNewChat?: () => void;
@@ -25,7 +25,6 @@ export default function ChatList({
   busy,
   onMenuClose,
   onChatDelete,
-  newChatVisible,
   onNewChat,
 }: ChatListProps) {
   const t = useTranslation();
@@ -38,6 +37,11 @@ export default function ChatList({
   const handleMenuClose = () => {
     if (onMenuClose) onMenuClose();
   };
+
+  const list = useMemo(() => {
+    if (asPath === "/") return [{ title: t(lng.newChat), id: "" }, ...chats];
+    return chats;
+  }, [chats, asPath]);
 
   return (
     <ClickAwayListener onClickAway={handleMenuClose}>
@@ -57,7 +61,7 @@ export default function ChatList({
           <Spinner center />
         ) : (
           <ul className="flex flex-col gap-1 overflow-hidden overflow-y-auto">
-            {chats.map(({ title, id }) => (
+            {list.map(({ title, id }) => (
               <li
                 key={id}
                 className={clsx(
@@ -72,21 +76,26 @@ export default function ChatList({
                   href={`/${id}`}
                   onClick={handleMenuClose}
                   title={title}
-                  className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2 "
+                  className={clsx(
+                    "flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2",
+                    id === "" && "text-center"
+                  )}
                 >
                   <span>{title}</span>
                 </Link>
-                <IconButton
-                  icon="close"
-                  className="flex-shrink-0 px-2"
-                  title="Delete chat"
-                  onClick={() => handleChatDelete(id)}
-                />
+                {id !== "" && (
+                  <IconButton
+                    icon="close"
+                    className="flex-shrink-0 px-2"
+                    title="Delete chat"
+                    onClick={() => handleChatDelete(id)}
+                  />
+                )}
               </li>
             ))}
           </ul>
         )}
-        {newChatVisible && (
+        {asPath !== "/" && (
           <Button onClick={onNewChat}>{t(lng.startNewChat)}</Button>
         )}
       </div>

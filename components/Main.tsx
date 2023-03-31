@@ -156,7 +156,6 @@ export default function Main() {
               chats={chats}
               open={menuOpen}
               onMenuClose={() => setMenuOpen(false)}
-              newChatVisible={messages.length > 0}
               onChatDelete={deleteChat}
               onNewChat={handleClearChat}
             />

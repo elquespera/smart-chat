@@ -56,7 +56,7 @@ export default function MessageList({ messages, busy }: MessageListProps) {
           )}
         </ul>
       ) : (
-        <CenteredBox>{t(lng.messageEmpty)}</CenteredBox>
+        <CenteredBox className="text-center">{t(lng.messageEmpty)}</CenteredBox>
       )}
     </div>
   );

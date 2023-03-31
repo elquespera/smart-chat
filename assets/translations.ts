@@ -6,6 +6,7 @@ export enum lng {
 
   messageEmpty,
   inputEmpty,
+  newChat,
   startNewChat,
 }
 
@@ -21,6 +22,7 @@ export const languageData: LanguageData = {
     [lng.messageEmpty]:
       "Type your question below to start a new chat or select from saved chats.",
     [lng.inputEmpty]: "Ask a question",
+    [lng.newChat]: "New chat",
     [lng.startNewChat]: "Start a new chat",
   },
   ru: {
@@ -30,6 +32,7 @@ export const languageData: LanguageData = {
     [lng.messageEmpty]:
       "Введите свой вопрос ниже, чтобы начать новый чат, или выберите один из сохраненных чатов.",
     [lng.inputEmpty]: "Задайте вопрос",
+    [lng.newChat]: "Новый чат",
     [lng.startNewChat]: "Новый чат",
   },
 };
