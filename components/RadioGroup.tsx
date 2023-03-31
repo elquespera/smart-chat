@@ -40,9 +40,11 @@ export default function RadioGroup({
         key={index}
         title={value}
         className={clsx(
-          "relative flex flex-col items-center select-none cursor-pointer overflow-hidden rounded-md p-2",
+          `relative select-none cursor-pointer overflow-hidden
+          rounded-md p-2
+          hover:bg-highlight`,
           checked &&
-            "before:absolute before:inset-0 before:opacity-20 before:bg-primary"
+            "text-contrast before:absolute before:inset-0 before:bg-primary"
         )}
       >
         <input
@@ -53,7 +55,7 @@ export default function RadioGroup({
           className="sr-only"
           onChange={() => handleChange(value)}
         />
-        {item.props.children}
+        <div className="relative">{item.props.children}</div>
       </label>
     );
   };
@@ -63,7 +65,7 @@ export default function RadioGroup({
   }, [value]);
 
   return (
-    <ul className="flex">
+    <ul className="flex gap-1">
       {Array.isArray(children)
         ? children.map((child, index) => renderRadio(index, child))
         : renderRadio(0, children)}
