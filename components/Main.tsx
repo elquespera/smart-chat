@@ -3,7 +3,7 @@ import { Chat, Message, UserSettings } from "@prisma/client";
 import axios, { AxiosResponse } from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
-import Input from "components/Input";
+import Input, { InputHandle } from "components/Input";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ChatWithMessages, DeleteResponse } from "types";
@@ -13,7 +13,7 @@ import Settings from "./Settings";
 import Welcome from "./Welcome";
 import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
-import { useContext } from "react";
+import { useRef, useContext } from "react";
 import { AppContext } from "context/AppContext";
 
 export default function Main() {
@@ -27,6 +27,7 @@ export default function Main() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatId, setChatId] = useState<string>();
   const { userId, isLoaded } = useAuth();
+  const inputRef = useRef<InputHandle>(null);
   const router = useRouter();
   const { setTheme, setLanguage } = useContext(AppContext);
   const { slug } = router.query;
@@ -126,6 +127,7 @@ export default function Main() {
 
   useEffect(() => {
     setChatId(Array.isArray(slug) ? slug[0] : slug);
+    inputRef.current?.focus();
   }, [slug]);
 
   useEffect(() => {
@@ -155,6 +157,7 @@ export default function Main() {
             <ChatList
               chats={chats}
               open={menuOpen}
+              busy={chatFetching}
               onMenuClose={() => setMenuOpen(false)}
               onChatDelete={deleteChat}
               onNewChat={handleClearChat}
@@ -174,6 +177,7 @@ export default function Main() {
                 onClose={() => setSettingsOpen(false)}
               />
               <Input
+                ref={inputRef}
                 busy={fetching}
                 onSend={handleSend}
                 onSettings={handleSettings}

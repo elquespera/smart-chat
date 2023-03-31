@@ -40,7 +40,7 @@ export function decryptMessages(messages?: Message[], id?: string) {
 }
 
 export function decryptChat(chat: ChatWithMessages, id?: string) {
-  chat.title = decrypt(chat.title, id);
+  // chat.title = decrypt(chat.title, id);
   chat.messages = decryptMessages(chat.messages, chat.id);
   return chat;
 }

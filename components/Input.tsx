@@ -1,6 +1,14 @@
 import { lng } from "assets/translations";
 import useTranslation from "hooks/useTranslation";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  ForwardedRef,
+  useImperativeHandle,
+} from "react";
 import IconButton from "./IconButton";
 
 interface InputProps {
@@ -9,13 +17,26 @@ interface InputProps {
   onSettings?: () => void;
 }
 
-export default function Input({ busy, onSend, onSettings }: InputProps) {
+export interface InputHandle {
+  focus: () => void;
+}
+
+const Input = forwardRef(function Input(
+  { busy, onSend, onSettings }: InputProps,
+  ref: ForwardedRef<InputHandle>
+) {
   const t = useTranslation();
   const [message, setMessage] = useState("");
   const [valid, setValid] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const buttonClass = "text-xl";
   const lines = Math.max(1, Math.min(5, message.split(/\r|\r\n|\n/).length));
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      inputRef.current?.focus();
+    },
+  }));
 
   const handleSend = () => {
     if (valid && !busy) {
@@ -86,4 +107,6 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
       </div>
     </label>
   );
-}
+});
+
+export default Input;
