@@ -9,6 +9,7 @@ export interface RadioGroupItemProps {
 interface RadioGroupProps {
   name?: string;
   value?: string;
+  className?: string;
   children?:
     | React.ReactElement<RadioGroupItemProps>
     | React.ReactElement<RadioGroupItemProps>[];
@@ -18,6 +19,7 @@ interface RadioGroupProps {
 export default function RadioGroup({
   name,
   value,
+  className,
   children,
   onChange,
 }: RadioGroupProps) {
@@ -65,7 +67,7 @@ export default function RadioGroup({
   }, [value]);
 
   return (
-    <ul className="flex gap-1">
+    <ul className={clsx("flex gap-1", className)}>
       {Array.isArray(children)
         ? children.map((child, index) => renderRadio(index, child))
         : renderRadio(0, children)}
