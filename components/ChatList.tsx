@@ -70,6 +70,7 @@ export default function ChatList({
               >
                 <Link
                   href={`/${id}`}
+                  onClick={handleMenuClose}
                   title={title}
                   className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2 "
                 >

@@ -37,6 +37,7 @@ export default function Main() {
 
   const handleClearChat = () => {
     router.push("/");
+    setMenuOpen(false);
   };
 
   const handleSettings = () => {
