@@ -51,7 +51,7 @@ export default function MessageList({ messages, busy }: MessageListProps) {
           ))}
           {busy && (
             <li className="flex justify-center p-4">
-              <Spinner />
+              <Spinner dots />
             </li>
           )}
         </ul>
