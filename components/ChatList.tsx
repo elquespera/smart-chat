@@ -54,7 +54,7 @@ export default function ChatList({
               key={id}
               className={clsx(
                 `relative flex gap-1 overflow-hidden isolate rounded-md 
-               p-2 w-full bg-background flex-shrink-0
+                 w-full bg-background flex-shrink-0
              hover:text-contrast hover:bg-primary`,
                 asPath === `/${id}` &&
                   "before:absolute before:inset-0 before:bg-primary before:opacity-10 before:-z-10"
@@ -63,13 +63,13 @@ export default function ChatList({
               <Link
                 href={`/${id}`}
                 title={title}
-                className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis"
+                className="flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2 "
               >
                 <span>{title}</span>
               </Link>
               <IconButton
                 icon="close"
-                className="flex-shrink-0"
+                className="flex-shrink-0 px-2"
                 title="Delete chat"
                 onClick={() => handleChatDelete(id)}
               />
