@@ -59,7 +59,7 @@ export default function Input({ busy, onSend, onSettings }: InputProps) {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
       />
-      <div className="flex gap-1 sm:gap-2">
+      <div className="flex sm:gap-1">
         {valid && (
           <IconButton
             icon="clear"
