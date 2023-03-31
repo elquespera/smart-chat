@@ -4,6 +4,7 @@ import prisma from "lib/prisma";
 import { checkRequest, checkHTTPError } from "lib/checkRequest";
 import { HTTPError } from "lib/httpError";
 import { Message } from "@prisma/client";
+import { decryptMessages } from "lib/crypt";
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,7 +28,7 @@ export default async function handler(
         where: { userId, id },
         select: { messages: true },
       });
-      res.status(200).json(messages?.messages || []);
+      res.status(200).json(decryptMessages(messages?.messages, id));
     } else {
       const result = await prisma.chat.deleteMany({
         where: { id: chat.id, userId },

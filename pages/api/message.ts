@@ -5,6 +5,7 @@ import { AssistantMood, ChatWithMessages, ErrorResponse } from "types";
 import prisma from "lib/prisma";
 import { ChatRole } from "@prisma/client";
 import { checkHTTPError, checkRequest } from "lib/checkRequest";
+import { decrypt, decryptChat, encrypt } from "lib/crypt";
 
 const openai = new OpenAIApi(
   new OpenAIConfig({
@@ -41,7 +42,7 @@ export default async function handler(
 
       if (!chatId) {
         const chat = await prisma.chat.create({
-          data: { title: message, userId },
+          data: { title: encrypt(message, userId), userId },
         });
         currentChatId = chat.id;
       }
@@ -61,7 +62,7 @@ export default async function handler(
 
       const messages = chat.messages.map(({ role, content }) => {
         return {
-          content,
+          content: decrypt(content, chat.id),
           role: role === "USER" ? "user" : "assistant",
         } as const;
       });
@@ -92,12 +93,17 @@ export default async function handler(
       if (title && title[title.length - 1] === ".") title = title.slice(0, -1);
 
       if (msg)
-        response = await addMessageToChat(msg, "ASSISTANT", chatId, title);
+        response = await addMessageToChat(
+          msg,
+          "ASSISTANT",
+          chatId,
+          encrypt(title, userId)
+        );
     }
 
     if (!response) throw new HTTPError("Chat not found", 400);
 
-    res.status(200).json(response);
+    res.status(200).json(decryptChat(response, userId));
   } catch (error) {
     checkHTTPError(res, error);
   }
@@ -115,7 +121,7 @@ async function addMessageToChat(
       title,
       messages: {
         create: {
-          content,
+          content: encrypt(content, chatId),
           role,
         },
       },
