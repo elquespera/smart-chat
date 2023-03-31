@@ -42,7 +42,7 @@ export default function Main() {
     inputRef.current?.focus();
   };
 
-  const handleSettings = () => {
+  const handleToggleSettings = () => {
     setSettingsOpen((current) => !current);
   };
 
@@ -174,13 +174,13 @@ export default function Main() {
                 open={settingsOpen}
                 mood={mood}
                 onMoodChange={handleMoodChange}
-                onClose={() => setSettingsOpen(false)}
+                onClose={handleToggleSettings}
               />
               <Input
                 ref={inputRef}
                 busy={fetching}
                 onSend={handleSend}
-                onSettings={handleSettings}
+                onSettings={handleToggleSettings}
               />
             </div>
           </div>

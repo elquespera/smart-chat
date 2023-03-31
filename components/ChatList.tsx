@@ -44,7 +44,9 @@ export default function ChatList({
   }, [chats, asPath]);
 
   return (
-    <ClickAwayListener onClickAway={handleMenuClose}>
+    <ClickAwayListener
+      onClickAway={(e) => e.type === "click" && handleMenuClose()}
+    >
       <div
         className={clsx(
           `absolute sm:relative

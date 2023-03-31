@@ -31,7 +31,7 @@ export default function Settings({
   };
 
   return (
-    <ClickAwayListener onClickAway={handleClose}>
+    <ClickAwayListener onClickAway={(e) => e.type === "click" && handleClose()}>
       <div
         className={clsx(
           open ? "flex" : "hidden",

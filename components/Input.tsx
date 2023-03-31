@@ -61,9 +61,8 @@ const Input = forwardRef(function Input(
   };
 
   const handleSettingsClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (onSettings) onSettings();
     e.stopPropagation();
-    return false;
+    if (onSettings) onSettings();
   };
 
   const handleClear = () => {
