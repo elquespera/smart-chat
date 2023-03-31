@@ -131,7 +131,3 @@ async function addMessageToChat(
     },
   });
 }
-
-export const config = {
-  runtime: "edge",
-};
