@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/nextjs";
 import { Chat, Message, UserSettings } from "@prisma/client";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
 import Input, { InputHandle } from "components/Input";
@@ -64,7 +64,8 @@ export default function Main() {
       );
       setMessages(response.data.messages || []);
       loadChats();
-    } catch {
+    } catch (e) {
+      console.log(e);
       setResponseError(true);
     } finally {
       setFetching(false);
@@ -72,6 +73,7 @@ export default function Main() {
   };
 
   const updateChat = async (chatId?: string, message?: string) => {
+    let curentChatId = chatId;
     try {
       setFetching(true);
 
@@ -83,10 +85,12 @@ export default function Main() {
 
       const chat = response.data;
       if (chatId !== chat.id) {
+        curentChatId = chat.id;
         router.push(`/${chat.id}`);
       } else {
         setMessages(chat.messages);
       }
+
       loadChats();
     } catch (error) {
       console.error(error);
@@ -94,7 +98,7 @@ export default function Main() {
       setFetching(false);
     }
 
-    fetchAssistantResponse(chatId);
+    fetchAssistantResponse(curentChatId);
   };
 
   const loadMessages = async (chatId?: string) => {
@@ -104,7 +108,7 @@ export default function Main() {
         const response = await axios.get<Message[]>(`api/chats/${chatId}`);
         setMessages(response.data);
         setResponseError(
-          response.data[response.data.length - 1].role === "USER"
+          !fetching && response.data[response.data.length - 1].role === "USER"
         );
       } finally {
         setMessageFetching(false);
