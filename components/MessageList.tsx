@@ -7,13 +7,21 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import Avatar from "./Avatar";
 import CenteredBox from "./CenteredBox";
 import Spinner from "./Spinner";
+import Button from "./Button";
 
 interface MessageListProps {
   messages: Message[];
   busy?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
 }
 
-export default function MessageList({ messages, busy }: MessageListProps) {
+export default function MessageList({
+  messages,
+  busy,
+  error,
+  onRetry,
+}: MessageListProps) {
   const t = useTranslation();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -53,6 +61,14 @@ export default function MessageList({ messages, busy }: MessageListProps) {
             <li className="flex justify-center p-4">
               <Spinner dots />
             </li>
+          )}
+          {error && !busy && (
+            <div className="flex flex-col gap-2 items-center mt-6">
+              <p className="text-center text-sm">{t(lng.fechingError)}</p>
+              <Button icon="refresh" onClick={onRetry}>
+                {t(lng.retry)}
+              </Button>
+            </div>
           )}
         </ul>
       ) : (

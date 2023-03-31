@@ -33,7 +33,8 @@ export type IconType =
   | "chat"
   | "menu"
   | "sun"
-  | "moon";
+  | "moon"
+  | "refresh";
 
 export interface LocalStorageData {
   chat?: ChatData;

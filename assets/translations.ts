@@ -8,6 +8,9 @@ export enum lng {
   inputEmpty,
   newChat,
   startNewChat,
+
+  fechingError,
+  retry,
 }
 
 type LanguageData = {
@@ -24,6 +27,9 @@ export const languageData: LanguageData = {
     [lng.inputEmpty]: "Ask a question",
     [lng.newChat]: "New chat",
     [lng.startNewChat]: "Start a new chat",
+    [lng.fechingError]:
+      "There was an error while fetching the response from the assistant",
+    [lng.retry]: "Retry",
   },
   ru: {
     [lng.welcomeAuthorized]: "Авторизируйтесь, чтобы воспользоваться SmartChat",
@@ -34,5 +40,7 @@ export const languageData: LanguageData = {
     [lng.inputEmpty]: "Задайте вопрос",
     [lng.newChat]: "Новый чат",
     [lng.startNewChat]: "Новый чат",
+    [lng.fechingError]: "При получении ответа от помощника произошла ошибка",
+    [lng.retry]: "Повторить",
   },
 };

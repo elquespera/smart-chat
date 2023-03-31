@@ -1,5 +1,4 @@
 import { useAuth, UserButton } from "@clerk/nextjs";
-import { AppTheme } from "@prisma/client";
 import { AppContext } from "context/AppContext";
 import { useContext } from "react";
 import Icon from "./Icon";

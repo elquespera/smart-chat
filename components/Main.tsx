@@ -21,6 +21,7 @@ export default function Main() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [fetching, setFetching] = useState(false);
+  const [responseError, setResponseError] = useState(false);
   const [chatFetching, setChatFetching] = useState(false);
   const [messageFetching, setMessageFetching] = useState(false);
   const [mood, setMood] = useState<string>();
@@ -50,12 +51,31 @@ export default function Main() {
     setMood(newMood);
   };
 
+  const fetchAssistantResponse = async (chatId?: string) => {
+    try {
+      setFetching(true);
+      setResponseError(false);
+      const response = await axios.post<ChatWithMessages>(
+        "api/message/",
+        null,
+        {
+          params: { chatId, mood },
+        }
+      );
+      setMessages(response.data.messages || []);
+      loadChats();
+    } catch {
+      setResponseError(true);
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const updateChat = async (chatId?: string, message?: string) => {
     try {
       setFetching(true);
-      let response: AxiosResponse<ChatWithMessages> | undefined;
 
-      response = await axios.post<ChatWithMessages>(
+      const response = await axios.post<ChatWithMessages>(
         "api/message/",
         { message },
         { params: { chatId } }
@@ -68,18 +88,13 @@ export default function Main() {
         setMessages(chat.messages);
       }
       loadChats();
-
-      response = await axios.post<ChatWithMessages>("api/message/", null, {
-        params: { chatId: chat.id, mood },
-      });
-
-      setMessages(response.data.messages || []);
-      loadChats();
     } catch (error) {
       console.error(error);
     } finally {
       setFetching(false);
     }
+
+    fetchAssistantResponse(chatId);
   };
 
   const loadMessages = async (chatId?: string) => {
@@ -88,6 +103,9 @@ export default function Main() {
         setMessageFetching(true);
         const response = await axios.get<Message[]>(`api/chats/${chatId}`);
         setMessages(response.data);
+        setResponseError(
+          response.data[response.data.length - 1].role === "USER"
+        );
       } finally {
         setMessageFetching(false);
       }
@@ -158,6 +176,7 @@ export default function Main() {
               chats={chats}
               open={menuOpen}
               busy={chatFetching}
+              disabled={fetching}
               onMenuClose={() => setMenuOpen(false)}
               onChatDelete={deleteChat}
               onNewChat={handleClearChat}
@@ -168,7 +187,12 @@ export default function Main() {
                   <Spinner />
                 </CenteredBox>
               ) : (
-                <MessageList messages={messages} busy={fetching} />
+                <MessageList
+                  messages={messages}
+                  busy={fetching}
+                  error={responseError}
+                  onRetry={() => fetchAssistantResponse(chatId)}
+                />
               )}
               <Settings
                 open={settingsOpen}

@@ -14,6 +14,7 @@ interface ChatListProps {
   chats: Chat[];
   open?: boolean;
   busy?: boolean;
+  disabled?: boolean;
   onMenuClose?: () => void;
   onChatDelete?: (id: string) => void;
   onNewChat?: () => void;
@@ -23,6 +24,7 @@ export default function ChatList({
   chats,
   open,
   busy,
+  disabled,
   onMenuClose,
   onChatDelete,
   onNewChat,
@@ -49,14 +51,16 @@ export default function ChatList({
     >
       <div
         className={clsx(
-          `absolute sm:relative
+          `absolute sm:relative isolate
          flex flex-col gap-4
          top-0 z-10 px-2 py-4
          flex-shrink-0 overflow-hidden
          w-side-menu h-full shadow-xl sm:shadow-none
          transition-transform sm:transition-none
          bg-background border-r border-divider`,
-          !open && "-translate-x-[100%] sm:translate-x-0"
+          !open && "-translate-x-[100%] sm:translate-x-0",
+          disabled &&
+            "before:absolute before:inset-0 before:bg-background before:opacity-80 before:z-20"
         )}
       >
         <ul className="flex flex-col gap-1 overflow-hidden overflow-y-auto">
@@ -64,11 +68,11 @@ export default function ChatList({
             <li
               key={id}
               className={clsx(
-                `relative flex gap-1 overflow-hidden isolate rounded-md 
+                `relative flex gap-1 overflow-hidden rounded-md
                  w-full bg-background flex-shrink-0
-             hover:text-contrast hover:bg-primary`,
+                 hover:text-contrast hover:bg-primary`,
                 asPath === `/${id}` &&
-                  "before:absolute before:inset-0 before:bg-primary before:opacity-10 before:-z-10"
+                  "before:absolute before:inset-0 before:bg-primary before:opacity-10"
               )}
             >
               <Link
