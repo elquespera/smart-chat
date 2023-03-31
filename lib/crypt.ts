@@ -2,10 +2,15 @@ import { Chat, Message } from "@prisma/client";
 import Cryptr from "cryptr";
 import { ChatWithMessages } from "types";
 
+const cryptrOptions = {
+  pbkdf2Iterations: 10000,
+  saltLength: 8,
+};
+
 function createCryptr(id?: string) {
   let key = process.env.CRYPTR_KEY || "";
   if (id) key += id;
-  return new Cryptr(key);
+  return new Cryptr(key, cryptrOptions);
 }
 
 export function encrypt(value?: string, id?: string) {
@@ -40,7 +45,7 @@ export function decryptMessages(messages?: Message[], id?: string) {
 }
 
 export function decryptChat(chat: ChatWithMessages, id?: string) {
-  // chat.title = decrypt(chat.title, id);
+  chat.title = decrypt(chat.title, id);
   chat.messages = decryptMessages(chat.messages, chat.id);
   return chat;
 }
