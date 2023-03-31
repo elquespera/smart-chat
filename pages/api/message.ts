@@ -77,7 +77,7 @@ export default async function handler(
           model: "gpt-3.5-turbo",
           user: userId,
           messages: [
-            ...messages,
+            ...messages.slice(-2),
             {
               role: "system",
               content:

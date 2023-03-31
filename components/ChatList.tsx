@@ -80,7 +80,7 @@ export default function ChatList({
                 onClick={handleMenuClose}
                 title={title}
                 className={clsx(
-                  "flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2",
+                  "relative flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2",
                   id === "" && "text-center"
                 )}
               >
