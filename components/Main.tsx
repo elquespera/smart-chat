@@ -39,6 +39,7 @@ export default function Main() {
   const handleClearChat = () => {
     router.push("/");
     setMenuOpen(false);
+    inputRef.current?.focus();
   };
 
   const handleSettings = () => {
@@ -127,7 +128,6 @@ export default function Main() {
 
   useEffect(() => {
     setChatId(Array.isArray(slug) ? slug[0] : slug);
-    inputRef.current?.focus();
   }, [slug]);
 
   useEffect(() => {
