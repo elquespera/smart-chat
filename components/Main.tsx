@@ -174,7 +174,7 @@ export default function Main() {
                 open={settingsOpen}
                 mood={mood}
                 onMoodChange={handleMoodChange}
-                onClose={handleToggleSettings}
+                onClose={() => setSettingsOpen(false)}
               />
               <Input
                 ref={inputRef}
