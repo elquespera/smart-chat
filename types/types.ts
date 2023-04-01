@@ -16,9 +16,8 @@ export interface ErrorResponse {
   message: string;
 }
 
-export interface DeleteResponse {
-  code: number;
-  message: string;
+export interface ICreateChat {
+  title: string;
 }
 
 export type ChatData = MessageData[];

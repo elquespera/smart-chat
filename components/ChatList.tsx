@@ -39,7 +39,7 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
     if (!id || chatDeleting) return;
     try {
       setChatDeleting(id);
-      const response = await axios.delete<DeleteResponse>(`api/chats/${id}`);
+      const response = await axios.delete<DeleteResponse>(`api/chat/${id}`);
       if (response.status === 204) {
         setChats(chats.filter((chat) => chat.id !== id));
         if (id === chatId) router.push("/");

@@ -6,22 +6,13 @@ import prisma from "lib/prisma";
 import { ChatRole } from "@prisma/client";
 import { checkHTTPError, checkRequest } from "lib/checkRequest";
 import { decrypt, decryptChat, encrypt } from "lib/crypt";
+import { HTTPError } from "lib/httpError";
 
 const openai = new OpenAIApi(
   new OpenAIConfig({
     apiKey: process.env.OPEN_AI_API_KEY,
   })
 );
-
-class HTTPError extends Error {
-  public statusCode: number;
-
-  constructor(message: string, code: number) {
-    super(message);
-    this.statusCode = code;
-    this.name = "HTTPError";
-  }
-}
 
 export default async function handler(
   req: NextApiRequest,

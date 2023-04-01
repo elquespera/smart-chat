@@ -31,24 +31,6 @@ export default function MessageList({ message }: MessageListProps) {
   const chatId = useChatId();
   const { userId } = useAuth();
 
-  const loadMessages = async () => {
-    if (chatId) {
-      try {
-        setFetching(true);
-        const response = await axios.get<Message[]>(`api/chats/${chatId}`);
-        setMessages(response.data);
-        setError(
-          !assistantBusy &&
-            response.data[response.data.length - 1].role === "USER"
-        );
-      } finally {
-        setFetching(false);
-      }
-    } else {
-      setMessages([]);
-    }
-  };
-
   const fetchAssistantResponse = async (chatId?: string) => {
     try {
       setAssistantBusy(true);
@@ -112,7 +94,27 @@ export default function MessageList({ message }: MessageListProps) {
   }, [messages, assistantBusy]);
 
   useEffect(() => {
-    loadMessages();
+    const fetchChat = async () => {
+      if (!chatId) {
+        setMessages([]);
+        return;
+      }
+      try {
+        setFetching(true);
+        const response = await axios.get<ChatWithMessages>(
+          `api/chat/${chatId}`
+        );
+        const messages = response.data.messages;
+        setMessages(messages);
+        setError(
+          !assistantBusy && messages[messages.length - 1].role === "USER"
+        );
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchChat();
   }, [chatId, userId]);
 
   useEffect(() => {
