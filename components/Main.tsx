@@ -15,6 +15,7 @@ import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
 import { useRef, useContext } from "react";
 import { AppContext } from "context/AppContext";
+import useChatId from "hooks/useChatId";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -26,12 +27,11 @@ export default function Main() {
   const [messageFetching, setMessageFetching] = useState(false);
   const [mood, setMood] = useState<string>();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [chatId, setChatId] = useState<string>();
   const { userId, isLoaded } = useAuth();
   const inputRef = useRef<InputHandle>(null);
   const router = useRouter();
+  const chatId = useChatId();
   const { setTheme, setLanguage } = useContext(AppContext);
-  const { slug } = router.query;
 
   const handleSend = (message: string) => {
     updateChat(chatId, message);
@@ -147,10 +147,6 @@ export default function Main() {
       setLanguage(response.data.language);
     }
   };
-
-  useEffect(() => {
-    setChatId(Array.isArray(slug) ? slug[0] : slug);
-  }, [slug]);
 
   useEffect(() => {
     loadChats();
