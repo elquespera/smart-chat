@@ -14,7 +14,7 @@ export default function Button({
   children,
   ...props
 }: ButtonProps) {
-  const buttonStyles = "px-3 py-2 rounded-lg text-contrast bg-primary";
+  const buttonStyles = "px-3 py-2 rounded-lg text-contrast bg-accent";
 
   const renderChildren = () => {
     if (icon)

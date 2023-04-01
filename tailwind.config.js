@@ -14,12 +14,14 @@ module.exports = {
       },
       colors: {
         primary: "var(--clr-primary)",
+        accent: "var(--clr-accent)",
         background: "var(--clr-background)",
         contrast: "var(--clr-contrast)",
         highlight: "var(--clr-highlight)",
         divider: "var(--clr-divider)",
-        user: "var(--clr-user)",
-        assistant: "var(--clr-assistant)",
+      },
+      opacity: {
+        hover: "0.2",
       },
     },
   },

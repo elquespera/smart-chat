@@ -14,8 +14,8 @@ export default function IconButton({ icon, ...props }: IconButtonProps) {
         `relative overflow-hidden rounded-full
         p-2
         disabled:opacity-60 disabled:hover:before:bg-transparent
-        before:absolute before:inset-0 before:opacity-10
-        hover:before:bg-primary`,
+        before:absolute before:inset-0 before:opacity-hover
+        hover:before:bg-accent`,
         props.className
       )}
     >

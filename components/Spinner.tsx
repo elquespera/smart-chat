@@ -18,7 +18,7 @@ export default function Spinner({
       {dots ? (
         <svg
           className={clsx(
-            "fill-primary",
+            "fill-accent",
             center && "self-center",
             small ? "w-6 h-6" : "w-8 h-8",
             className

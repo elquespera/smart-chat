@@ -44,9 +44,9 @@ export default function RadioGroup({
         className={clsx(
           `relative select-none cursor-pointer overflow-hidden
           rounded-md p-2
-          hover:bg-highlight`,
-          checked &&
-            "text-contrast before:absolute before:inset-0 before:bg-primary"
+          before:absolute before:inset-0 before:bg-accent before:opacity-0
+          hover:before:opacity-hover`,
+          checked && "text-contrast before:opacity-100 before:hover:opacity-100"
         )}
       >
         <input

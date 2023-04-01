@@ -39,12 +39,10 @@
 
 :root {
   --clr-primary: #000;
+  --clr-accent: #2858a5;
   --clr-background: #fff;
   --clr-contrast: #fff;
-  --clr-highlight: #eee;
   --clr-divider: #bbb;
-  --clr-user: #f5f5f5;
-  --clr-assistant: #fff;
 }
 
 body {
@@ -54,10 +52,8 @@ body {
 
 body.dark {
   --clr-primary: #eee;
+  --clr-accent: #c3e4fa;
   --clr-background: #000;
   --clr-contrast: #000;
-  --clr-highlight: #333;
   --clr-divider: #666;
-  --clr-user: #1f1f1f;
-  --clr-assistant: #000;
 }

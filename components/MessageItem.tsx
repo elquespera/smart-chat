@@ -12,13 +12,16 @@ export default function MessageItem({ content, role }: MessageItemProps) {
   return (
     <li
       className={clsx(
-        "flex p-2 sm:p-4 sm:rounded-lg gap-2",
-        role === "USER" ? "bg-user" : "bg-assistant"
+        "relative sm:rounded-lg overflow-hidden",
+        role === "USER" &&
+          "before:absolute before:inset-0 before:bg-accent before:opacity-10"
       )}
     >
-      <Avatar user={role === "USER"} />
-      <div className="markdown">
-        <ReactMarkdown>{content}</ReactMarkdown>
+      <div className="relative flex p-2 sm:p-4 gap-2">
+        <Avatar user={role === "USER"} />
+        <div className="markdown">
+          <ReactMarkdown>{content}</ReactMarkdown>
+        </div>
       </div>
     </li>
   );

@@ -37,7 +37,7 @@ export default function Header({ menuOpen, onMenuClick }: HeaderProps) {
           onClick={handleMenuClick}
         />
       )}
-      <h2 className="flex gap-1 items-center font-bold sm:text-lg mr-auto">
+      <h2 className="flex text-accent gap-1 items-center font-bold sm:text-lg mr-auto">
         <Icon type="chat" className="text-xl" />
         SmartChat
       </h2>

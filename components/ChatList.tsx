@@ -108,9 +108,9 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
               className={clsx(
                 `relative flex gap-1 overflow-hidden rounded-md
                  w-full bg-background flex-shrink-0
-                 hover:text-contrast hover:bg-primary`,
+                 hover:text-contrast hover:bg-accent`,
                 chatId === id &&
-                  "before:absolute before:inset-0 before:bg-primary before:opacity-10"
+                  "before:absolute before:inset-0 before:bg-accent primary before:opacity-hover"
               )}
             >
               <Link
@@ -142,7 +142,7 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
         </ul>
         {fetching && <Spinner center small />}
         {chatId && (
-          <Button onClick={onNewChat} className="mt-auto">
+          <Button onClick={onNewChat} className="mt-auto self-center">
             {t(lng.startNewChat)}
           </Button>
         )}
