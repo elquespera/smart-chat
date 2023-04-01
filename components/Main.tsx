@@ -19,14 +19,12 @@ import useChatId from "hooks/useChatId";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [fetching, setFetching] = useState(false);
   const [responseError, setResponseError] = useState(false);
-  const [chatFetching, setChatFetching] = useState(false);
   const [messageFetching, setMessageFetching] = useState(false);
   const [mood, setMood] = useState<string>();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [chatsOpen, setChatsOpen] = useState(false);
   const { userId, isLoaded } = useAuth();
   const inputRef = useRef<InputHandle>(null);
   const router = useRouter();
@@ -37,9 +35,9 @@ export default function Main() {
     updateChat(chatId, message);
   };
 
-  const handleClearChat = () => {
+  const handleNewChat = () => {
     router.push("/");
-    setMenuOpen(false);
+    setChatsOpen(false);
     inputRef.current?.focus();
   };
 
@@ -63,7 +61,7 @@ export default function Main() {
         }
       );
       setMessages(response.data.messages || []);
-      loadChats();
+      // loadChats();
     } catch (e) {
       console.log(e);
       setResponseError(true);
@@ -91,7 +89,7 @@ export default function Main() {
         setMessages(chat.messages);
       }
 
-      loadChats();
+      // loadChats();
     } catch (error) {
       console.error(error);
     } finally {
@@ -118,28 +116,6 @@ export default function Main() {
     }
   };
 
-  const loadChats = async () => {
-    try {
-      setChatFetching(true);
-      if (userId) {
-        const response = await axios.get<Chat[]>("api/chats/");
-        setChats(response.data);
-      } else {
-        setChats([]);
-      }
-    } finally {
-      setChatFetching(false);
-    }
-  };
-
-  const deleteChat = async (id: string) => {
-    const response = await axios.delete<DeleteResponse>(`api/chats/${id}`);
-    if (response.status === 204) {
-      if (id === chatId) router.push("/");
-      loadChats();
-    }
-  };
-
   const loadSettings = async () => {
     if (userId) {
       const response = await axios.get<UserSettings>("api/settings");
@@ -149,7 +125,6 @@ export default function Main() {
   };
 
   useEffect(() => {
-    loadChats();
     loadSettings();
   }, [userId]);
 
@@ -160,26 +135,23 @@ export default function Main() {
   return (
     <>
       <Header
-        menuOpen={menuOpen}
-        onMenuClick={() => setMenuOpen((current) => !current)}
+        menuOpen={chatsOpen}
+        onMenuClick={() => setChatsOpen((current) => !current)}
       />
       <main className="relative isolate h-[100dvh] w-[100vw] pt-header">
         {userId ? (
           <div
             className={clsx(
               "relative flex h-full w-full",
-              menuOpen &&
+              chatsOpen &&
                 "after:absolute after:inset-0 after:bg-background after:opacity-80 sm:after:hidden"
             )}
           >
             <ChatList
-              chats={chats}
-              open={menuOpen}
-              busy={chatFetching}
+              open={chatsOpen}
               disabled={fetching}
-              onMenuClose={() => setMenuOpen(false)}
-              onChatDelete={deleteChat}
-              onNewChat={handleClearChat}
+              onClose={() => setChatsOpen(false)}
+              onNewChat={handleNewChat}
             />
             <div className="flex flex-col flex-grow overflow-auto">
               {messageFetching ? (

@@ -1,54 +1,83 @@
-import { useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Chat } from "@prisma/client";
 import { lng } from "assets/translations";
 import clsx from "clsx";
 import useTranslation from "hooks/useTranslation";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import Button from "./Button";
 import IconButton from "./IconButton";
 import Spinner from "./Spinner";
 import ClickAwayListener from "react-click-away-listener";
+import useChatId from "hooks/useChatId";
+import { useAuth } from "@clerk/nextjs";
+import axios from "axios";
+import { DeleteResponse } from "types";
+import { useRouter } from "next/router";
 
 interface ChatListProps {
-  chats: Chat[];
   open?: boolean;
-  busy?: boolean;
   disabled?: boolean;
-  onMenuClose?: () => void;
-  onChatDelete?: (id: string) => void;
-  onNewChat?: () => void;
+  onClose?: () => void;
+  onNewChat: () => void;
 }
 
 export default function ChatList({
-  chats,
   open,
-  busy,
   disabled,
-  onMenuClose,
-  onChatDelete,
+  onClose,
   onNewChat,
 }: ChatListProps) {
+  const [chats, setChats] = useState<Partial<Chat>[]>([]);
+  const [fetching, setFetching] = useState(false);
+  const [chatDeleting, setChatDeleting] = useState<string>();
+  const chatId = useChatId();
+  const { userId } = useAuth();
+  const router = useRouter();
   const t = useTranslation();
-  const { asPath } = useRouter();
 
-  const handleChatDelete = (id: string) => {
-    if (onChatDelete) onChatDelete(id);
+  const handleClose = (eventType?: string) => {
+    if (onClose && (!eventType || eventType === "click")) onClose();
   };
 
-  const handleMenuClose = () => {
-    if (onMenuClose) onMenuClose();
+  const handleChatDelete = async (id?: string) => {
+    if (!id || chatDeleting) return;
+    try {
+      setChatDeleting(id);
+      const response = await axios.delete<DeleteResponse>(`api/chats/${id}`);
+      if (response.status === 204) {
+        setChats(chats.filter((chat) => chat.id !== id));
+        if (id === chatId) router.push("/");
+      }
+    } finally {
+      setChatDeleting(undefined);
+    }
+  };
+
+  const fetchChats = async () => {
+    try {
+      setFetching(true);
+      if (userId) {
+        const response = await axios.get<Chat[]>("api/chats/");
+        setChats(response.data);
+      } else {
+        setChats([]);
+      }
+    } finally {
+      setFetching(false);
+    }
   };
 
   const list = useMemo(() => {
-    if (asPath === "/") return [{ title: t(lng.newChat), id: "" }, ...chats];
-    return chats;
-  }, [chats, asPath]);
+    if (chatId) return chats;
+    return [...chats, { title: t(lng.newChat) }];
+  }, [chats, chatId]);
+
+  useEffect(() => {
+    fetchChats();
+  }, [userId]);
 
   return (
-    <ClickAwayListener
-      onClickAway={(e) => e.type === "click" && handleMenuClose()}
-    >
+    <ClickAwayListener onClickAway={(e) => handleClose(e.type)}>
       <div
         className={clsx(
           `absolute sm:relative isolate
@@ -60,45 +89,51 @@ export default function ChatList({
          bg-background border-r border-divider`,
           !open && "-translate-x-[100%] sm:translate-x-0",
           disabled &&
-            "before:absolute before:inset-0 before:bg-background before:opacity-80 before:z-20"
+            `before:absolute before:inset-0 
+            before:bg-background before:opacity-80 before:z-20`
         )}
       >
         <ul className="flex flex-col gap-1 overflow-hidden overflow-y-auto">
-          {list.map(({ title, id }) => (
+          {list.map(({ title, id }, index) => (
             <li
-              key={id}
+              key={id || index}
               className={clsx(
                 `relative flex gap-1 overflow-hidden rounded-md
                  w-full bg-background flex-shrink-0
                  hover:text-contrast hover:bg-primary`,
-                asPath === `/${id}` &&
+                chatId === id &&
                   "before:absolute before:inset-0 before:bg-primary before:opacity-10"
               )}
             >
               <Link
-                href={`/${id}`}
-                onClick={handleMenuClose}
+                href={`/${id || ""}`}
+                onClick={() => (id ? handleClose() : onNewChat())}
                 title={title}
                 className={clsx(
                   "relative flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2",
-                  id === "" && "text-center"
+                  !id && "text-center"
                 )}
               >
                 <span>{title}</span>
               </Link>
-              {id !== "" && (
-                <IconButton
-                  icon="close"
-                  className="flex-shrink-0 px-2"
-                  title="Delete chat"
-                  onClick={() => handleChatDelete(id)}
-                />
+              {id && (
+                <div className="flex items-center flex-shrink-0">
+                  {id === chatDeleting ? (
+                    <Spinner className="w-8 h-8 p-1" />
+                  ) : (
+                    <IconButton
+                      icon="close"
+                      title="Delete chat"
+                      onClick={() => handleChatDelete(id)}
+                    />
+                  )}
+                </div>
               )}
             </li>
           ))}
         </ul>
-        {busy && <Spinner center small />}
-        {asPath !== "/" && (
+        {fetching && <Spinner center small />}
+        {chatId && (
           <Button onClick={onNewChat} className="mt-auto">
             {t(lng.startNewChat)}
           </Button>

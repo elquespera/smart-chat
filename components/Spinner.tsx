@@ -14,14 +14,15 @@ export default function Spinner({
   ...props
 }: SpinnerProps) {
   return (
-    <div
-      role="status"
-      {...props}
-      className={clsx(className, center && "self-center")}
-    >
+    <>
       {dots ? (
         <svg
-          className={clsx("fill-primary", small ? "w-6 h-6" : "w-8 h-8")}
+          className={clsx(
+            "fill-primary",
+            center && "self-center",
+            small ? "w-6 h-6" : "w-8 h-8",
+            className
+          )}
           width="120"
           height="30"
           viewBox="0 0 120 30"
@@ -97,7 +98,11 @@ export default function Spinner({
         </svg>
       ) : (
         <svg
-          className={clsx("text-primary", small ? "w-6 h-6" : "w-10 h-10")}
+          className={clsx(
+            center && "self-center",
+            small ? "w-6 h-6" : "w-10 h-10",
+            className
+          )}
           width="44"
           height="44"
           viewBox="0 0 44 44"
@@ -152,6 +157,6 @@ export default function Spinner({
           </g>
         </svg>
       )}
-    </div>
+    </>
   );
 }
