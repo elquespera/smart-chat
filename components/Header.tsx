@@ -26,14 +26,14 @@ export default function Header({ menuOpen, onMenuClick }: HeaderProps) {
   return (
     <header
       className="fixed h-header w-full flex 
-      items-center p-4 border-b gap-4
+      items-center p-4 border-b gap-2 sm:gap-4
       bg-background
        border-divider shadow-md z-10"
     >
       {isAuthorized && (
         <IconButton
           icon={menuOpen ? "close" : "menu"}
-          className="text-2xl sm:hidden"
+          className="text-xl sm:hidden"
           onClick={handleMenuClick}
         />
       )}
@@ -43,7 +43,7 @@ export default function Header({ menuOpen, onMenuClick }: HeaderProps) {
       </h2>
       {isAuthorized && (
         <IconButton
-          className="text-2xl"
+          className="text-xl"
           icon={theme === "light" ? "sun" : "moon"}
           onClick={handleThemeChange}
         />
