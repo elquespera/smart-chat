@@ -15,25 +15,17 @@ import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
 import { useRef, useContext } from "react";
 import { AppContext } from "context/AppContext";
-import useChatId from "hooks/useChatId";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [responseError, setResponseError] = useState(false);
-  const [messageFetching, setMessageFetching] = useState(false);
+  const [message, setMessage] = useState<string>();
+
   const [mood, setMood] = useState<string>();
   const [chatsOpen, setChatsOpen] = useState(false);
   const { userId, isLoaded } = useAuth();
   const inputRef = useRef<InputHandle>(null);
   const router = useRouter();
-  const chatId = useChatId();
-  const { setTheme, setLanguage, setUpdatedChat, setAssistantBusy } =
-    useContext(AppContext);
-
-  const handleSend = (message: string) => {
-    updateChat(chatId, message);
-  };
+  const { setTheme, setLanguage } = useContext(AppContext);
 
   const handleNewChat = () => {
     router.push("/");
@@ -49,74 +41,6 @@ export default function Main() {
     setMood(newMood);
   };
 
-  const fetchAssistantResponse = async (chatId?: string) => {
-    try {
-      setAssistantBusy(true);
-      setResponseError(false);
-      const response = await axios.post<ChatWithMessages>(
-        "api/message/",
-        null,
-        {
-          params: { chatId, mood },
-        }
-      );
-      setMessages(response.data.messages || []);
-      setUpdatedChat(response.data);
-    } catch (e) {
-      console.log(e);
-      setResponseError(true);
-    } finally {
-      setAssistantBusy(false);
-    }
-  };
-
-  const updateChat = async (chatId?: string, message?: string) => {
-    let curentChatId = chatId;
-    try {
-      setAssistantBusy(true);
-
-      const response = await axios.post<ChatWithMessages>(
-        "api/message/",
-        { message },
-        { params: { chatId } }
-      );
-
-      const chat = response.data;
-      if (chatId !== chat.id) {
-        curentChatId = chat.id;
-        router.push(`/${chat.id}`);
-      } else {
-        setMessages(chat.messages);
-      }
-
-      setUpdatedChat(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setAssistantBusy(false);
-    }
-
-    fetchAssistantResponse(curentChatId);
-  };
-
-  const loadMessages = async (chatId?: string) => {
-    if (chatId) {
-      try {
-        setMessageFetching(true);
-        const response = await axios.get<Message[]>(`api/chats/${chatId}`);
-        setMessages(response.data);
-        setResponseError(
-          !setAssistantBusy &&
-            response.data[response.data.length - 1].role === "USER"
-        );
-      } finally {
-        setMessageFetching(false);
-      }
-    } else {
-      setMessages([]);
-    }
-  };
-
   useEffect(() => {
     const loadSettings = async () => {
       if (userId) {
@@ -128,10 +52,6 @@ export default function Main() {
 
     loadSettings();
   }, [userId]);
-
-  useEffect(() => {
-    loadMessages(chatId);
-  }, [chatId, userId]);
 
   return (
     <>
@@ -154,17 +74,7 @@ export default function Main() {
               onNewChat={handleNewChat}
             />
             <div className="flex flex-col flex-grow overflow-auto">
-              {messageFetching ? (
-                <CenteredBox>
-                  <Spinner />
-                </CenteredBox>
-              ) : (
-                <MessageList
-                  messages={messages}
-                  error={responseError}
-                  onRetry={() => fetchAssistantResponse(chatId)}
-                />
-              )}
+              <MessageList message={message} />
               <Settings
                 open={settingsOpen}
                 mood={mood}
@@ -173,7 +83,7 @@ export default function Main() {
               />
               <Input
                 ref={inputRef}
-                onSend={handleSend}
+                onSend={setMessage}
                 onSettings={handleToggleSettings}
               />
             </div>

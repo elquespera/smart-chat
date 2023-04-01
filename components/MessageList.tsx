@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import { Message } from "@prisma/client";
 import { lng } from "assets/translations";
 import clsx from "clsx";
@@ -10,39 +10,127 @@ import CenteredBox from "./CenteredBox";
 import Spinner from "./Spinner";
 import Button from "./Button";
 import { AppContext } from "context/AppContext";
+import useChatId from "hooks/useChatId";
+import axios from "axios";
+import { useAuth } from "@clerk/nextjs";
+import { ChatWithMessages } from "types";
+import { useRouter } from "next/router";
 
 interface MessageListProps {
-  messages: Message[];
-  error?: boolean;
-  onRetry?: () => void;
+  message?: string;
 }
 
-export default function MessageList({
-  messages,
-  error,
-  onRetry,
-}: MessageListProps) {
+export default function MessageList({ message }: MessageListProps) {
   const t = useTranslation();
-  const { assistantBusy } = useContext(AppContext);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [error, setError] = useState(false);
+  const [fetching, setFetching] = useState(false);
 
-  const scrollToBottom = () => {
-    const wrapper = wrapperRef.current;
-    if (wrapper) {
-      wrapper.scrollTop = wrapper.scrollHeight;
+  const { assistantBusy, setAssistantBusy, setUpdatedChat } =
+    useContext(AppContext);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const chatId = useChatId();
+  const { userId } = useAuth();
+
+  const loadMessages = async () => {
+    if (chatId) {
+      try {
+        setFetching(true);
+        const response = await axios.get<Message[]>(`api/chats/${chatId}`);
+        setMessages(response.data);
+        setError(
+          !assistantBusy &&
+            response.data[response.data.length - 1].role === "USER"
+        );
+      } finally {
+        setFetching(false);
+      }
+    } else {
+      setMessages([]);
     }
   };
 
+  const fetchAssistantResponse = async (chatId?: string) => {
+    try {
+      setAssistantBusy(true);
+      setError(false);
+      const response = await axios.post<ChatWithMessages>(
+        "api/message/",
+        null,
+        {
+          params: { chatId },
+        }
+      );
+      setMessages(response.data.messages || []);
+      setUpdatedChat(response.data);
+    } catch (e) {
+      console.log(e);
+      setError(true);
+    } finally {
+      setAssistantBusy(false);
+    }
+  };
+
+  const updateChat = async () => {
+    if (!message) return;
+    let curentChatId = chatId;
+    try {
+      setAssistantBusy(true);
+
+      const response = await axios.post<ChatWithMessages>(
+        "api/message/",
+        { message },
+        { params: { chatId } }
+      );
+
+      const chat = response.data;
+      if (chatId !== chat.id) {
+        curentChatId = chat.id;
+        router.push(`/${chat.id}`);
+      } else {
+        setMessages(chat.messages);
+      }
+
+      setUpdatedChat(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setAssistantBusy(false);
+    }
+
+    fetchAssistantResponse(curentChatId);
+  };
+
   useEffect(() => {
+    const scrollToBottom = () => {
+      const wrapper = wrapperRef.current;
+      if (wrapper) {
+        wrapper.scrollTop = wrapper.scrollHeight;
+      }
+    };
+
     scrollToBottom();
   }, [messages, assistantBusy]);
+
+  useEffect(() => {
+    loadMessages();
+  }, [chatId, userId]);
+
+  useEffect(() => {
+    updateChat();
+  }, [message]);
 
   return (
     <div
       ref={wrapperRef}
       className="relative flex flex-grow flex-col pt-4 overflow-auto w-full h-full"
     >
-      {messages.length > 0 ? (
+      {fetching ? (
+        <CenteredBox>
+          <Spinner />
+        </CenteredBox>
+      ) : messages.length > 0 ? (
         <ul className="grid gap-2 pb-4 sm:px-8 w-chat self-center">
           {messages.map(({ content, role, id }) => (
             <li
@@ -66,14 +154,17 @@ export default function MessageList({
           {error && !assistantBusy && (
             <div className="flex flex-col gap-2 items-center mt-6">
               <p className="text-center text-sm">{t(lng.fechingError)}</p>
-              <Button icon="refresh" onClick={onRetry}>
+              <Button
+                icon="refresh"
+                onClick={() => fetchAssistantResponse(chatId)}
+              >
                 {t(lng.retry)}
               </Button>
             </div>
           )}
         </ul>
       ) : (
-        <CenteredBox className="text-center">{t(lng.messageEmpty)}</CenteredBox>
+        <CenteredBox>{t(lng.messageEmpty)}</CenteredBox>
       )}
     </div>
   );
