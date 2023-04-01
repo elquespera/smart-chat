@@ -22,14 +22,14 @@ interface ChatListProps {
 }
 
 export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
+  const t = useTranslation();
+  const router = useRouter();
   const [chats, setChats] = useState<Partial<Chat>[]>([]);
   const [fetching, setFetching] = useState(false);
   const [chatDeleting, setChatDeleting] = useState<string>();
   const chatId = useChatId();
   const { updatedChat, assistantBusy } = useContext(AppContext);
   const { userId } = useAuth();
-  const router = useRouter();
-  const t = useTranslation();
 
   const handleClose = (eventType?: string) => {
     if (onClose && (!eventType || eventType === "click")) onClose();
@@ -131,7 +131,7 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
                   ) : (
                     <IconButton
                       icon="close"
-                      title="Delete chat"
+                      title={t(lng.deleteChat)}
                       onClick={() => handleChatDelete(id)}
                     />
                   )}
