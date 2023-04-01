@@ -11,7 +11,6 @@ import ClickAwayListener from "react-click-away-listener";
 import useChatId from "hooks/useChatId";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
-import { DeleteResponse } from "types";
 import { useRouter } from "next/router";
 import { AppContext } from "context/AppContext";
 
@@ -39,7 +38,7 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
     if (!id || chatDeleting) return;
     try {
       setChatDeleting(id);
-      const response = await axios.delete<DeleteResponse>(`api/chat/${id}`);
+      const response = await axios.delete(`api/chat/${id}`);
       if (response.status === 204) {
         setChats(chats.filter((chat) => chat.id !== id));
         if (id === chatId) router.push("/");
@@ -49,40 +48,42 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
     }
   };
 
-  const fetchChats = async () => {
-    try {
-      setFetching(true);
-      if (userId) {
-        const response = await axios.get<Chat[]>("api/chats/");
-        setChats(response.data);
-      } else {
-        setChats([]);
-      }
-    } finally {
-      setFetching(false);
-    }
-  };
-
   useEffect(() => {
     if (!updatedChat) return;
-    const chatIndex = chats.findIndex(({ id }) => id === updatedChat.id);
-    let newChats = chats;
-    if (chatIndex >= 0) {
-      newChats[chatIndex] = updatedChat;
-    } else {
-      newChats.unshift(updatedChat);
-    }
-    setChats([...newChats]);
+    setChats((current) => {
+      const chatIndex = current.findIndex(({ id }) => id === updatedChat.id);
+      let newChats = [...current];
+      if (chatIndex >= 0) {
+        newChats[chatIndex] = updatedChat;
+      } else {
+        newChats.unshift(updatedChat);
+      }
+      return newChats;
+    });
   }, [updatedChat]);
 
   useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        setFetching(true);
+        if (userId) {
+          const response = await axios.get<Chat[]>("api/chats/");
+          setChats(response.data);
+        } else {
+          setChats([]);
+        }
+      } finally {
+        setFetching(false);
+      }
+    };
+
     fetchChats();
   }, [userId]);
 
   const list = useMemo(() => {
     if (chatId) return chats;
     return [...chats, { title: t(lng.newChat) }];
-  }, [chats, chatId]);
+  }, [chats, chatId, t]);
 
   return (
     <ClickAwayListener onClickAway={(e) => handleClose(e.type)}>

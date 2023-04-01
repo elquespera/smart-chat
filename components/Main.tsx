@@ -49,7 +49,7 @@ export default function Main() {
     };
 
     loadSettings();
-  }, [userId]);
+  }, [userId, setTheme, setLanguage]);
 
   return (
     <>

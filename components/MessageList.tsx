@@ -52,36 +52,6 @@ export default function MessageList({ message }: MessageListProps) {
     }
   };
 
-  const updateChat = async () => {
-    if (!message) return;
-    let curentChatId = chatId;
-    try {
-      setAssistantBusy(true);
-
-      const response = await axios.post<ChatWithMessages>(
-        "api/message/",
-        { message },
-        { params: { chatId } }
-      );
-
-      const chat = response.data;
-      if (chatId !== chat.id) {
-        curentChatId = chat.id;
-        router.push(`/${chat.id}`);
-      } else {
-        setMessages(chat.messages);
-      }
-
-      setUpdatedChat(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setAssistantBusy(false);
-    }
-
-    fetchAssistantResponse(curentChatId);
-  };
-
   useEffect(() => {
     const scrollToBottom = () => {
       const wrapper = wrapperRef.current;
@@ -118,6 +88,36 @@ export default function MessageList({ message }: MessageListProps) {
   }, [chatId, userId]);
 
   useEffect(() => {
+    const updateChat = async () => {
+      if (!message) return;
+      let curentChatId = chatId;
+      try {
+        setAssistantBusy(true);
+
+        const response = await axios.post<ChatWithMessages>(
+          "api/message/",
+          { message },
+          { params: { chatId } }
+        );
+
+        const chat = response.data;
+        if (chatId !== chat.id) {
+          curentChatId = chat.id;
+          router.push(`/${chat.id}`);
+        } else {
+          setMessages(chat.messages);
+        }
+
+        setUpdatedChat(response.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setAssistantBusy(false);
+      }
+
+      fetchAssistantResponse(curentChatId);
+    };
+
     updateChat();
   }, [message]);
 
