@@ -127,9 +127,7 @@ export default function MessageList({ message }: MessageListProps) {
       className="relative flex flex-grow flex-col pt-4 overflow-auto w-full h-full"
     >
       {fetching ? (
-        <CenteredBox>
-          <Spinner />
-        </CenteredBox>
+        <CenteredBox withSpinner />
       ) : messages.length > 0 ? (
         <ul className="grid gap-2 pb-4 sm:px-8 w-chat self-center">
           {messages.map(({ content, role, id }) => (

@@ -1,17 +1,15 @@
 import { useAuth } from "@clerk/nextjs";
-import { Message, UserSettings } from "@prisma/client";
+import { UserSettings } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
 import Input, { InputHandle } from "components/Input";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { ChatWithMessages } from "types";
 import ChatList from "./ChatList";
 import Header from "./Header";
 import Settings from "./Settings";
 import Welcome from "./Welcome";
-import Spinner from "./Spinner";
 import CenteredBox from "./CenteredBox";
 import { useRef, useContext } from "react";
 import { AppContext } from "context/AppContext";
@@ -91,9 +89,7 @@ export default function Main() {
         ) : isLoaded ? (
           <Welcome />
         ) : (
-          <CenteredBox>
-            <Spinner />
-          </CenteredBox>
+          <CenteredBox withSpinner />
         )}
       </main>
     </>
