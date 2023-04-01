@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Message } from "@prisma/client";
 import { lng } from "assets/translations";
 import clsx from "clsx";
@@ -8,21 +9,21 @@ import Avatar from "./Avatar";
 import CenteredBox from "./CenteredBox";
 import Spinner from "./Spinner";
 import Button from "./Button";
+import { AppContext } from "context/AppContext";
 
 interface MessageListProps {
   messages: Message[];
-  busy?: boolean;
   error?: boolean;
   onRetry?: () => void;
 }
 
 export default function MessageList({
   messages,
-  busy,
   error,
   onRetry,
 }: MessageListProps) {
   const t = useTranslation();
+  const { assistantBusy } = useContext(AppContext);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -34,7 +35,7 @@ export default function MessageList({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, busy]);
+  }, [messages, assistantBusy]);
 
   return (
     <div
@@ -57,12 +58,12 @@ export default function MessageList({
               </div>
             </li>
           ))}
-          {busy && (
+          {assistantBusy && (
             <li className="flex justify-center p-4">
               <Spinner dots />
             </li>
           )}
-          {error && !busy && (
+          {error && !assistantBusy && (
             <div className="flex flex-col gap-2 items-center mt-6">
               <p className="text-center text-sm">{t(lng.fechingError)}</p>
               <Button icon="refresh" onClick={onRetry}>

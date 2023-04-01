@@ -17,22 +17,16 @@ import { AppContext } from "context/AppContext";
 
 interface ChatListProps {
   open?: boolean;
-  disabled?: boolean;
   onClose?: () => void;
   onNewChat: () => void;
 }
 
-export default function ChatList({
-  open,
-  disabled,
-  onClose,
-  onNewChat,
-}: ChatListProps) {
+export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
   const [chats, setChats] = useState<Partial<Chat>[]>([]);
   const [fetching, setFetching] = useState(false);
   const [chatDeleting, setChatDeleting] = useState<string>();
   const chatId = useChatId();
-  const { updatedChat } = useContext(AppContext);
+  const { updatedChat, assistantBusy } = useContext(AppContext);
   const { userId } = useAuth();
   const router = useRouter();
   const t = useTranslation();
@@ -102,7 +96,7 @@ export default function ChatList({
          transition-transform sm:transition-none
          bg-background border-r border-divider`,
           !open && "-translate-x-[100%] sm:translate-x-0",
-          disabled &&
+          assistantBusy &&
             `before:absolute before:inset-0 
             before:bg-background before:opacity-80 before:z-20`
         )}

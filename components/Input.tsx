@@ -5,14 +5,15 @@ import {
   useEffect,
   useRef,
   useState,
+  useContext,
   forwardRef,
   ForwardedRef,
   useImperativeHandle,
 } from "react";
 import IconButton from "./IconButton";
+import { AppContext } from "context/AppContext";
 
 interface InputProps {
-  busy?: boolean;
   onSend?: (message: string) => void;
   onSettings?: () => void;
 }
@@ -22,10 +23,11 @@ export interface InputHandle {
 }
 
 const Input = forwardRef(function Input(
-  { busy, onSend, onSettings }: InputProps,
+  { onSend, onSettings }: InputProps,
   ref: ForwardedRef<InputHandle>
 ) {
   const t = useTranslation();
+  const { assistantBusy } = useContext(AppContext);
   const [message, setMessage] = useState("");
   const [valid, setValid] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -39,7 +41,7 @@ const Input = forwardRef(function Input(
   }));
 
   const handleSend = () => {
-    if (valid && !busy) {
+    if (valid && !assistantBusy) {
       if (onSend) onSend(message);
       setMessage("");
     }
@@ -97,7 +99,7 @@ const Input = forwardRef(function Input(
           icon="send"
           className={buttonClass}
           onClick={handleSend}
-          disabled={!valid || busy}
+          disabled={!valid || assistantBusy}
         />
         <IconButton
           icon="settings"

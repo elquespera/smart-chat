@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { Chat, Message, UserSettings } from "@prisma/client";
+import { Message, UserSettings } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import MessageList from "components/MessageList";
@@ -20,7 +20,6 @@ import useChatId from "hooks/useChatId";
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [fetching, setFetching] = useState(false);
   const [responseError, setResponseError] = useState(false);
   const [messageFetching, setMessageFetching] = useState(false);
   const [mood, setMood] = useState<string>();
@@ -29,7 +28,8 @@ export default function Main() {
   const inputRef = useRef<InputHandle>(null);
   const router = useRouter();
   const chatId = useChatId();
-  const { setTheme, setLanguage, setUpdatedChat } = useContext(AppContext);
+  const { setTheme, setLanguage, setUpdatedChat, setAssistantBusy } =
+    useContext(AppContext);
 
   const handleSend = (message: string) => {
     updateChat(chatId, message);
@@ -51,7 +51,7 @@ export default function Main() {
 
   const fetchAssistantResponse = async (chatId?: string) => {
     try {
-      setFetching(true);
+      setAssistantBusy(true);
       setResponseError(false);
       const response = await axios.post<ChatWithMessages>(
         "api/message/",
@@ -66,14 +66,14 @@ export default function Main() {
       console.log(e);
       setResponseError(true);
     } finally {
-      setFetching(false);
+      setAssistantBusy(false);
     }
   };
 
   const updateChat = async (chatId?: string, message?: string) => {
     let curentChatId = chatId;
     try {
-      setFetching(true);
+      setAssistantBusy(true);
 
       const response = await axios.post<ChatWithMessages>(
         "api/message/",
@@ -93,7 +93,7 @@ export default function Main() {
     } catch (error) {
       console.error(error);
     } finally {
-      setFetching(false);
+      setAssistantBusy(false);
     }
 
     fetchAssistantResponse(curentChatId);
@@ -106,7 +106,8 @@ export default function Main() {
         const response = await axios.get<Message[]>(`api/chats/${chatId}`);
         setMessages(response.data);
         setResponseError(
-          !fetching && response.data[response.data.length - 1].role === "USER"
+          !setAssistantBusy &&
+            response.data[response.data.length - 1].role === "USER"
         );
       } finally {
         setMessageFetching(false);
@@ -116,15 +117,15 @@ export default function Main() {
     }
   };
 
-  const loadSettings = async () => {
-    if (userId) {
-      const response = await axios.get<UserSettings>("api/settings");
-      setTheme(response.data.theme);
-      setLanguage(response.data.language);
-    }
-  };
-
   useEffect(() => {
+    const loadSettings = async () => {
+      if (userId) {
+        const response = await axios.get<UserSettings>("api/settings");
+        setTheme(response.data.theme);
+        setLanguage(response.data.language);
+      }
+    };
+
     loadSettings();
   }, [userId]);
 
@@ -149,7 +150,6 @@ export default function Main() {
           >
             <ChatList
               open={chatsOpen}
-              disabled={fetching}
               onClose={() => setChatsOpen(false)}
               onNewChat={handleNewChat}
             />
@@ -161,7 +161,6 @@ export default function Main() {
               ) : (
                 <MessageList
                   messages={messages}
-                  busy={fetching}
                   error={responseError}
                   onRetry={() => fetchAssistantResponse(chatId)}
                 />
@@ -174,7 +173,6 @@ export default function Main() {
               />
               <Input
                 ref={inputRef}
-                busy={fetching}
                 onSend={handleSend}
                 onSettings={handleToggleSettings}
               />

@@ -11,6 +11,8 @@ interface AppContextInterface {
   setLanguage: (language?: AppLanguage | null) => void;
   updatedChat?: Chat;
   setUpdatedChat: (chat?: Chat) => void;
+  assistantBusy: boolean;
+  setAssistantBusy: (isBusy: boolean) => void;
 }
 
 export const defaultAppContext: AppContextInterface = {
@@ -19,6 +21,8 @@ export const defaultAppContext: AppContextInterface = {
   language: "en",
   setLanguage: () => {},
   setUpdatedChat: () => {},
+  assistantBusy: false,
+  setAssistantBusy: () => {},
 };
 
 export const AppContext = createContext(defaultAppContext);
@@ -29,6 +33,7 @@ export function useAppContext() {
     setTheme,
     setLanguage,
     setUpdatedChat,
+    setAssistantBusy,
   });
 
   function setAppTheme(theme: AppTheme) {
@@ -57,6 +62,12 @@ export function useAppContext() {
   function setUpdatedChat(chat?: Chat) {
     setAppContext((current) => {
       return { ...current, updatedChat: chat };
+    });
+  }
+
+  function setAssistantBusy(isBusy: boolean) {
+    setAppContext((current) => {
+      return { ...current, assistantBusy: isBusy };
     });
   }
 
