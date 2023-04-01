@@ -1,11 +1,8 @@
 import { useState, useContext } from "react";
 import { Message } from "@prisma/client";
 import { lng } from "assets/translations";
-import clsx from "clsx";
 import useTranslation from "hooks/useTranslation";
 import { useEffect, useRef } from "react";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import Avatar from "./Avatar";
 import CenteredBox from "./CenteredBox";
 import Spinner from "./Spinner";
 import Button from "./Button";
@@ -15,6 +12,7 @@ import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { ChatWithMessages } from "types";
 import { useRouter } from "next/router";
+import MessageItem from "./MessageItem";
 
 interface MessageListProps {
   message?: string;
@@ -131,18 +129,7 @@ export default function MessageList({ message }: MessageListProps) {
       ) : messages.length > 0 ? (
         <ul className="grid gap-2 pb-4 sm:px-8 w-chat self-center">
           {messages.map(({ content, role, id }) => (
-            <li
-              key={id}
-              className={clsx(
-                "flex p-2 sm:p-4 sm:rounded-lg gap-2",
-                role === "USER" ? "bg-user" : "bg-assistant"
-              )}
-            >
-              <Avatar user={role === "USER"} />
-              <div className="markdown">
-                <ReactMarkdown>{content}</ReactMarkdown>
-              </div>
-            </li>
+            <MessageItem key={id} content={content} role={role} />
           ))}
           {assistantBusy && (
             <li className="flex justify-center p-4">
@@ -150,7 +137,7 @@ export default function MessageList({ message }: MessageListProps) {
             </li>
           )}
           {error && !assistantBusy && (
-            <div className="flex flex-col gap-2 items-center mt-6">
+            <li className="flex flex-col gap-2 items-center mt-6 p-2">
               <p className="text-center text-sm">{t(lng.fechingError)}</p>
               <Button
                 icon="refresh"
@@ -158,7 +145,7 @@ export default function MessageList({ message }: MessageListProps) {
               >
                 {t(lng.retry)}
               </Button>
-            </div>
+            </li>
           )}
         </ul>
       ) : (
