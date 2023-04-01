@@ -46,7 +46,7 @@ export default function RadioGroup({
           rounded-md p-2
           before:absolute before:inset-0 before:bg-accent before:opacity-0
           hover:before:opacity-hover`,
-          checked && "text-contrast before:opacity-100 before:hover:opacity-100"
+          checked && "text-contrast before:opacity-100 hover:before:opacity-100"
         )}
       >
         <input
