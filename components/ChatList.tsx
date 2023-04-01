@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { Chat } from "@prisma/client";
 import { lng } from "assets/translations";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import { DeleteResponse } from "types";
 import { useRouter } from "next/router";
+import { AppContext } from "context/AppContext";
 
 interface ChatListProps {
   open?: boolean;
@@ -31,6 +32,7 @@ export default function ChatList({
   const [fetching, setFetching] = useState(false);
   const [chatDeleting, setChatDeleting] = useState<string>();
   const chatId = useChatId();
+  const { updatedChat } = useContext(AppContext);
   const { userId } = useAuth();
   const router = useRouter();
   const t = useTranslation();
@@ -67,14 +69,26 @@ export default function ChatList({
     }
   };
 
-  const list = useMemo(() => {
-    if (chatId) return chats;
-    return [...chats, { title: t(lng.newChat) }];
-  }, [chats, chatId]);
+  useEffect(() => {
+    if (!updatedChat) return;
+    const chatIndex = chats.findIndex(({ id }) => id === updatedChat.id);
+    let newChats = chats;
+    if (chatIndex >= 0) {
+      newChats[chatIndex] = updatedChat;
+    } else {
+      newChats.unshift(updatedChat);
+    }
+    setChats([...newChats]);
+  }, [updatedChat]);
 
   useEffect(() => {
     fetchChats();
   }, [userId]);
+
+  const list = useMemo(() => {
+    if (chatId) return chats;
+    return [...chats, { title: t(lng.newChat) }];
+  }, [chats, chatId]);
 
   return (
     <ClickAwayListener onClickAway={(e) => handleClose(e.type)}>

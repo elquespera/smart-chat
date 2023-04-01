@@ -1,4 +1,4 @@
-import { AppLanguage, AppTheme, UserSettings } from "@prisma/client";
+import { AppLanguage, AppTheme, Chat, UserSettings } from "@prisma/client";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -9,6 +9,8 @@ interface AppContextInterface {
   setTheme: (theme?: AppTheme | null) => void;
   language: AppLanguage;
   setLanguage: (language?: AppLanguage | null) => void;
+  updatedChat?: Chat;
+  setUpdatedChat: (chat?: Chat) => void;
 }
 
 export const defaultAppContext: AppContextInterface = {
@@ -16,6 +18,7 @@ export const defaultAppContext: AppContextInterface = {
   setTheme: () => {},
   language: "en",
   setLanguage: () => {},
+  setUpdatedChat: () => {},
 };
 
 export const AppContext = createContext(defaultAppContext);
@@ -25,6 +28,7 @@ export function useAppContext() {
     ...defaultAppContext,
     setTheme,
     setLanguage,
+    setUpdatedChat,
   });
 
   function setAppTheme(theme: AppTheme) {
@@ -47,6 +51,12 @@ export function useAppContext() {
     saveSettings({ language });
     setAppContext((current) => {
       return { ...current, language };
+    });
+  }
+
+  function setUpdatedChat(chat?: Chat) {
+    setAppContext((current) => {
+      return { ...current, updatedChat: chat };
     });
   }
 

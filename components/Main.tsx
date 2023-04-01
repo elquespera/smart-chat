@@ -6,7 +6,7 @@ import MessageList from "components/MessageList";
 import Input, { InputHandle } from "components/Input";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { ChatWithMessages, DeleteResponse } from "types";
+import { ChatWithMessages } from "types";
 import ChatList from "./ChatList";
 import Header from "./Header";
 import Settings from "./Settings";
@@ -29,7 +29,7 @@ export default function Main() {
   const inputRef = useRef<InputHandle>(null);
   const router = useRouter();
   const chatId = useChatId();
-  const { setTheme, setLanguage } = useContext(AppContext);
+  const { setTheme, setLanguage, setUpdatedChat } = useContext(AppContext);
 
   const handleSend = (message: string) => {
     updateChat(chatId, message);
@@ -61,7 +61,7 @@ export default function Main() {
         }
       );
       setMessages(response.data.messages || []);
-      // loadChats();
+      setUpdatedChat(response.data);
     } catch (e) {
       console.log(e);
       setResponseError(true);
@@ -89,7 +89,7 @@ export default function Main() {
         setMessages(chat.messages);
       }
 
-      // loadChats();
+      setUpdatedChat(response.data);
     } catch (error) {
       console.error(error);
     } finally {
