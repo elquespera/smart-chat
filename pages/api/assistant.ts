@@ -43,3 +43,7 @@ export default async function handler(
     checkHTTPError(res, error);
   }
 }
+
+export const config = {
+  runtime: "edge",
+};
