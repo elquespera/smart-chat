@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Configuration as OpenAIConfig, OpenAIApi } from "openai";
 import { AssistantMood, ErrorResponse } from "types";
 import prisma from "lib/prisma";
-import { Message } from "@prisma/client";
 import { checkHTTPError, checkRequest } from "lib/checkRequest";
 import { decrypt } from "lib/crypt";
 import { ASSISTNT_MOODS } from "consts";
@@ -23,8 +22,6 @@ export default async function handler(
     let { chatId, mood } = req.query;
     if (Array.isArray(chatId)) chatId = chatId[0];
     if (!chatId) throw new HTTPError("Chat id is not valid", 400);
-
-    let response: Message | null = null;
 
     const chat = await prisma.chat.findUnique({
       where: { id: chatId },

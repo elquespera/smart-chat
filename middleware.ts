@@ -20,7 +20,7 @@ export const config = {
     "/api/chat",
     "/api/chat/:id*",
     "/api/message",
-    "/api/assistant",
+    "/api/assistant/:chatId*",
     "/api/settings",
   ],
 };

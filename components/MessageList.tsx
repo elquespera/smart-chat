@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Message } from "@prisma/client";
+import { ChatRole, Message } from "@prisma/client";
 import { lng } from "assets/translations";
 import useTranslation from "hooks/useTranslation";
 import { useEffect, useRef } from "react";
@@ -31,19 +31,43 @@ export default function MessageList({ message }: MessageListProps) {
   const chatId = useChatId();
   const { userId } = useAuth();
 
+  const addMessage = async (
+    message: string | undefined,
+    role: ChatRole,
+    chatId?: string
+  ) => {
+    if (!message) return;
+
+    try {
+      setAssistantBusy(true);
+      const response = await axios.post<ChatWithMessages>(
+        "api/message/",
+        { message, role },
+        { params: { chatId } }
+      );
+      const chat = response.data;
+      if (chatId !== chat.id) {
+        router.push(`/${chat.id}`);
+      } else {
+        setMessages(chat.messages);
+      }
+
+      setUpdatedChat(chat);
+      return chatId || chat.id;
+    } finally {
+      setAssistantBusy(false);
+    }
+  };
+
   const fetchAssistantResponse = async (chatId?: string) => {
+    console.log(chatId);
+    if (!chatId) return;
     try {
       setAssistantBusy(true);
       setError(false);
-      const response = await axios.post<ChatWithMessages>(
-        "api/message/",
-        null,
-        {
-          params: { chatId },
-        }
-      );
-      setMessages(response.data.messages || []);
-      setUpdatedChat(response.data);
+      const response = await axios.get<string>(`api/assistant/${chatId}`);
+
+      return response.data;
     } catch (e) {
       console.log(e);
       setError(true);
@@ -62,6 +86,16 @@ export default function MessageList({ message }: MessageListProps) {
 
     scrollToBottom();
   }, [messages, assistantBusy]);
+
+  useEffect(() => {
+    const updateChat = async () => {
+      const currentChatId = await addMessage(message, "USER", chatId);
+      const response = await fetchAssistantResponse(currentChatId);
+      addMessage(response, "ASSISTANT", currentChatId);
+    };
+
+    updateChat();
+  }, [message]);
 
   useEffect(() => {
     const fetchChat = async () => {
@@ -86,40 +120,6 @@ export default function MessageList({ message }: MessageListProps) {
 
     fetchChat();
   }, [chatId, userId]);
-
-  useEffect(() => {
-    const updateChat = async () => {
-      if (!message) return;
-      let curentChatId = chatId;
-      try {
-        setAssistantBusy(true);
-
-        const response = await axios.post<ChatWithMessages>(
-          "api/message/",
-          { message },
-          { params: { chatId } }
-        );
-
-        const chat = response.data;
-        if (chatId !== chat.id) {
-          curentChatId = chat.id;
-          router.push(`/${chat.id}`);
-        } else {
-          setMessages(chat.messages);
-        }
-
-        setUpdatedChat(response.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setAssistantBusy(false);
-      }
-
-      fetchAssistantResponse(curentChatId);
-    };
-
-    updateChat();
-  }, [message]);
 
   return (
     <div
