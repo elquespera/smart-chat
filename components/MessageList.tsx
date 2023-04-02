@@ -10,7 +10,7 @@ import { AppContext } from "context/AppContext";
 import useChatId from "hooks/useChatId";
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
-import { ChatWithMessages } from "types";
+import { ChatWithMessages, OpenAIMessage } from "types";
 import { useRouter } from "next/router";
 import MessageItem from "./MessageItem";
 
@@ -53,19 +53,20 @@ export default function MessageList({ message }: MessageListProps) {
       }
 
       setUpdatedChat(chat);
-      return chatId || chat.id;
+      return chat;
     } finally {
       setAssistantBusy(false);
     }
   };
 
-  const fetchAssistantResponse = async (chatId?: string) => {
-    console.log(chatId);
-    if (!chatId) return;
+  const fetchAssistantResponse = async (messages?: OpenAIMessage[]) => {
+    if (!messages) return;
     try {
       setAssistantBusy(true);
       setError(false);
-      const response = await axios.get<string>(`api/assistant/${chatId}`);
+      const response = await axios.post<string>(`api/assistant`, {
+        messages,
+      });
 
       return response.data;
     } catch (e) {
@@ -87,11 +88,22 @@ export default function MessageList({ message }: MessageListProps) {
     scrollToBottom();
   }, [messages, assistantBusy]);
 
+  const getOpenAIMessages = (messages: Message[]): OpenAIMessage[] => {
+    return messages.map(({ content, role }) => {
+      return {
+        content,
+        role: role === "USER" ? "user" : "assistant",
+      } as const;
+    });
+  };
+
   useEffect(() => {
     const updateChat = async () => {
-      const currentChatId = await addMessage(message, "USER", chatId);
-      const response = await fetchAssistantResponse(currentChatId);
-      addMessage(response, "ASSISTANT", currentChatId);
+      const chat = await addMessage(message, "USER", chatId);
+      if (!chat) return;
+      const messages = getOpenAIMessages(chat.messages);
+      const response = await fetchAssistantResponse(messages);
+      addMessage(response, "ASSISTANT", chat.id);
     };
 
     updateChat();
@@ -143,7 +155,9 @@ export default function MessageList({ message }: MessageListProps) {
               <p className="text-center text-sm">{t(lng.fechingError)}</p>
               <Button
                 icon="refresh"
-                onClick={() => fetchAssistantResponse(chatId)}
+                onClick={() =>
+                  fetchAssistantResponse(getOpenAIMessages(messages))
+                }
               >
                 {t(lng.retry)}
               </Button>

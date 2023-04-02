@@ -20,7 +20,10 @@ export interface ICreateChat {
   title: string;
 }
 
-export type ChatData = MessageData[];
+export interface OpenAIMessage {
+  content: string;
+  role: "user" | "assistant";
+}
 
 export type IconType =
   | "send"
@@ -38,7 +41,6 @@ export type IconType =
   | "check";
 
 export interface LocalStorageData {
-  chat?: ChatData;
   mood?: string;
 }
 
