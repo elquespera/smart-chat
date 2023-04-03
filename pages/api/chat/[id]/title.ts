@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import prisma from "lib/prisma";
 import { Configuration as OpenAIConfig, OpenAIApi } from "openai";
 import { ErrorResponse } from "types";
 import { checkHTTPError, checkRequest } from "lib/checkRequest";
@@ -18,6 +19,7 @@ export default async function handler(
   res: NextApiResponse<Chat | ErrorResponse>
 ) {
   try {
+    prisma;
     const [, userId] = checkRequest(req);
 
     let { id } = req.query;
