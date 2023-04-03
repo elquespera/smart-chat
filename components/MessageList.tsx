@@ -13,6 +13,7 @@ import { useAuth } from "@clerk/nextjs";
 import { ChatWithMessages, OpenAIMessage } from "types";
 import { useRouter } from "next/router";
 import MessageItem from "./MessageItem";
+import clsx from "clsx";
 
 interface MessageListProps {
   message?: string;
@@ -95,7 +96,6 @@ export default function MessageList({ message }: MessageListProps) {
       };
 
       for await (const chunk of readChunks(reader)) {
-        console.log(chunk);
         message.content += chunk;
         setCurrentMessage({ ...message });
       }
@@ -180,11 +180,15 @@ export default function MessageList({ message }: MessageListProps) {
           {messageList.map(({ content, role, id }) => (
             <MessageItem key={id} content={content} role={role} />
           ))}
-          {assistantBusy && (
-            <li className="flex justify-center p-4">
-              <Spinner dots />
-            </li>
-          )}
+          <li className="flex justify-center p-4">
+            <Spinner
+              dots
+              className={clsx(
+                "scale-0 transition-transform",
+                assistantBusy && "scale-100"
+              )}
+            />
+          </li>
           {error && !assistantBusy && (
             <li className="flex flex-col gap-2 items-center mt-6 p-2">
               <p className="text-center text-sm">{t(lng.fechingError)}</p>
