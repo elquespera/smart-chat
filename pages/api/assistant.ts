@@ -1,46 +1,42 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Configuration as OpenAIConfig, OpenAIApi } from "openai";
-import { ErrorResponse, OpenAIMessage } from "types";
-import { checkHTTPError, checkRequest } from "lib/checkRequest";
-import { HTTPError } from "lib/httpError";
-
-const openai = new OpenAIApi(
-  new OpenAIConfig({
-    apiKey: process.env.OPEN_AI_API_KEY,
-  })
-);
+import type { NextRequest } from "next/server";
+import { OpenAIMessage } from "types";
+import { OpenAI } from "openai-streams";
+import { getAuth } from "@clerk/nextjs/server";
 
 interface IAssistantBody {
   messages: OpenAIMessage[];
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<string | ErrorResponse>
-) {
+export default async function handler(req: NextRequest) {
   try {
-    const [, userId] = checkRequest(req, "POST");
+    const { userId } = getAuth(req);
+    if (!userId)
+      return new Response(null, { status: 401, statusText: "Not authorized" });
 
-    let { messages } = <IAssistantBody>req.body;
+    const json = (await req.json()) as IAssistantBody;
+    const { messages } = json;
 
-    if (!messages) throw new HTTPError("Messages not defined", 400);
+    if (!messages)
+      return new Response(null, {
+        statusText: "Messages not defined",
+        status: 400,
+      });
 
     // const moodPrompt = ASSISTNT_MOODS[mood as AssistantMood]?.prompt || "";
-    const moodPrompt = "";
+    // const moodPrompt = "";
 
-    const result = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      user: userId,
-      messages: [{ role: "system", content: moodPrompt }, ...messages],
-    });
+    const stream = await OpenAI(
+      "chat",
+      {
+        model: "gpt-3.5-turbo",
+        messages,
+      },
+      { apiKey: process.env.OPEN_AI_API_KEY }
+    );
 
-    const msg = result.data.choices?.[0].message?.content;
-
-    if (!msg) throw new HTTPError("Assistant not responded", 429);
-
-    res.status(200).json(msg);
+    return new Response(stream);
   } catch (error) {
-    checkHTTPError(res, error);
+    console.log(error);
   }
 }
 

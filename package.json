@@ -23,6 +23,7 @@
     "eslint-config-next": "13.2.4",
     "next": "13.2.4",
     "openai": "^3.2.1",
+    "openai-streams": "^4.2.0",
     "react": "18.2.0",
     "react-click-away-listener": "^2.2.3",
     "react-dom": "18.2.0",

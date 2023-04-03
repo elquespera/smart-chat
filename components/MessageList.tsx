@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useMemo } from "react";
 import { ChatRole, Message } from "@prisma/client";
 import { lng } from "assets/translations";
 import useTranslation from "hooks/useTranslation";
@@ -22,6 +22,7 @@ export default function MessageList({ message }: MessageListProps) {
   const t = useTranslation();
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
+  const [currentMessage, setCurrentMessage] = useState<Message>();
   const [error, setError] = useState(false);
   const [fetching, setFetching] = useState(false);
 
@@ -30,6 +31,12 @@ export default function MessageList({ message }: MessageListProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const chatId = useChatId();
   const { userId } = useAuth();
+
+  const messageList = useMemo(() => {
+    const list = [...messages];
+    if (currentMessage) list.push(currentMessage);
+    return list;
+  }, [messages, currentMessage]);
 
   const addMessage = async (
     message: string | undefined,
@@ -59,16 +66,41 @@ export default function MessageList({ message }: MessageListProps) {
     }
   };
 
-  const fetchAssistantResponse = async (messages?: OpenAIMessage[]) => {
+  const fetchAssistantResponse = async (
+    messages?: OpenAIMessage[],
+    chatId?: string
+  ) => {
     if (!messages) return;
     try {
       setAssistantBusy(true);
       setError(false);
-      const response = await axios.post<string>(`api/assistant`, {
-        messages,
+      const response = await fetch(`api/assistant`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ messages }),
       });
 
-      return response.data;
+      if (!response.body) return;
+      const reader = response.body
+        .pipeThrough(new TextDecoderStream())
+        .getReader();
+
+      const message: Message = {
+        id: -100,
+        role: "ASSISTANT",
+        content: "",
+        chatId: chatId || "",
+      };
+
+      for await (const chunk of readChunks(reader)) {
+        message.content += chunk;
+        setCurrentMessage({ ...message });
+      }
+
+      await addMessage(message.content, "ASSISTANT", chatId);
+      setCurrentMessage(undefined);
     } catch (e) {
       console.log(e);
       setError(true);
@@ -86,7 +118,7 @@ export default function MessageList({ message }: MessageListProps) {
     };
 
     scrollToBottom();
-  }, [messages, assistantBusy]);
+  }, [messageList, assistantBusy]);
 
   const getOpenAIMessages = (messages: Message[]): OpenAIMessage[] => {
     return messages.map(({ content, role }) => {
@@ -101,10 +133,12 @@ export default function MessageList({ message }: MessageListProps) {
     const updateChat = async () => {
       const chat = await addMessage(message, "USER", chatId);
       if (!chat) return;
+
       const messages = getOpenAIMessages(chat.messages);
-      const response = await fetchAssistantResponse(messages);
-      addMessage(response, "ASSISTANT", chat.id);
+      await fetchAssistantResponse(messages, chat.id);
     };
+
+    if (!message) return;
 
     updateChat();
   }, [message]);
@@ -140,9 +174,9 @@ export default function MessageList({ message }: MessageListProps) {
     >
       {fetching ? (
         <CenteredBox withSpinner />
-      ) : messages.length > 0 ? (
+      ) : messageList.length > 0 ? (
         <ul className="grid gap-2 pb-4 sm:px-8 w-chat self-center">
-          {messages.map(({ content, role, id }) => (
+          {messageList.map(({ content, role, id }) => (
             <MessageItem key={id} content={content} role={role} />
           ))}
           {assistantBusy && (
@@ -156,7 +190,7 @@ export default function MessageList({ message }: MessageListProps) {
               <Button
                 icon="refresh"
                 onClick={() =>
-                  fetchAssistantResponse(getOpenAIMessages(messages))
+                  fetchAssistantResponse(getOpenAIMessages(messages), chatId)
                 }
               >
                 {t(lng.retry)}
@@ -169,4 +203,28 @@ export default function MessageList({ message }: MessageListProps) {
       )}
     </div>
   );
+}
+
+function readChunks(reader: ReadableStreamDefaultReader) {
+  return {
+    async *[Symbol.asyncIterator]() {
+      let readResult = await reader.read();
+      while (!readResult.done) {
+        let result = "";
+        if (typeof readResult.value === "string") {
+          const match = readResult.value.match(/\{"content":\s?".*"\}/);
+          if (match) result = match.join(",");
+        }
+
+        let json: { content?: string };
+        try {
+          json = JSON.parse(result);
+        } catch {
+          json = { content: "" };
+        }
+        yield json?.content || "";
+        readResult = await reader.read();
+      }
+    },
+  };
 }
