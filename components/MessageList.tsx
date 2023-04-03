@@ -211,20 +211,23 @@ function readChunks(reader: ReadableStreamDefaultReader) {
     async *[Symbol.asyncIterator]() {
       let readResult = await reader.read();
       while (!readResult.done) {
-        let result = "";
+        let result = readResult.value;
         if (typeof readResult.value === "string") {
           const match = readResult.value.match(/\{"content":\s?".*"\}/);
           if (match) result = match.join(",");
         }
 
-        console.log(readResult.value, result);
-
-        let json: { content?: string };
+        console.log(readResult.value);
+        let json;
         try {
           json = JSON.parse(result);
         } catch {
           json = { content: "" };
         }
+        console.log(json);
+        // const match = readResult.value.match(/\{"content":\s?".*"\}/);
+        // console.log(match);
+
         yield json?.content || "";
         readResult = await reader.read();
       }

@@ -25,14 +25,22 @@ export default async function handler(req: NextRequest) {
     // const moodPrompt = ASSISTNT_MOODS[mood as AssistantMood]?.prompt || "";
     // const moodPrompt = "";
 
-    const stream = await OpenAI(
-      "chat",
-      {
-        model: "gpt-3.5-turbo",
-        messages,
+    const payload = {
+      model: "gpt-3.5-turbo",
+      messages,
+      stream: true,
+    };
+
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPEN_AI_API_KEY ?? ""}`,
       },
-      { apiKey: process.env.OPEN_AI_API_KEY }
-    );
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    const stream = res.body;
 
     return new Response(stream);
   } catch (error) {
