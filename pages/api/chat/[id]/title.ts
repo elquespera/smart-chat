@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "lib/prisma";
 import { Configuration as OpenAIConfig, OpenAIApi } from "openai";
 import { ErrorResponse } from "types";
 import { checkHTTPError, checkRequest } from "lib/checkRequest";
@@ -7,6 +6,7 @@ import { HTTPError } from "lib/httpError";
 import { Chat } from "@prisma/client";
 import { decryptChat, decryptMessages, encrypt } from "lib/crypt";
 import getOpenAIMessages from "lib/getOpenAIMessages";
+import { getChat, updateChat } from "lib/chatService";
 
 const openai = new OpenAIApi(
   new OpenAIConfig({
@@ -19,7 +19,6 @@ export default async function handler(
   res: NextApiResponse<Chat | ErrorResponse>
 ) {
   try {
-    prisma;
     const [, userId] = checkRequest(req);
 
     let { id } = req.query;
@@ -55,19 +54,4 @@ export default async function handler(
   } catch (error) {
     checkHTTPError(res, error);
   }
-}
-
-function getChat(id: string, userId: string) {
-  return prisma.chat.findFirst({
-    where: { userId, id },
-    include: { messages: true },
-  });
-}
-
-function updateChat(id: string, userId: string, title: string) {
-  return prisma.chat.update({
-    where: { id },
-    data: { title: encrypt(title, userId), userId },
-    include: { messages: true },
-  });
 }
