@@ -33,16 +33,23 @@ export default async function handler(
       const result = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         user: userId,
-        messages: getOpenAIMessages(messages),
+        messages: [
+          ...getOpenAIMessages(messages),
+          {
+            role: "system",
+            content: "Provide this conversation with a short descriptive title",
+          },
+        ],
       });
 
       const title = result.data.choices?.[0].message?.content;
       if (title) {
         chat = await updateChat(id, userId, title);
       }
+      res.status(200).json(decryptChat(chat, userId));
+    } else {
+      throw new HTTPError("Conversation is too short", 400);
     }
-
-    res.status(200).json(decryptChat(chat, userId));
   } catch (error) {
     checkHTTPError(res, error);
   }

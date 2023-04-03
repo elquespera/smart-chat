@@ -14,6 +14,7 @@ import { ChatWithMessages, OpenAIMessage } from "types";
 import { useRouter } from "next/router";
 import MessageItem from "./MessageItem";
 import clsx from "clsx";
+import getOpenAIMessages from "lib/getOpenAIMessages";
 
 interface MessageListProps {
   message?: string;
@@ -46,6 +47,8 @@ export default function MessageList({ message }: MessageListProps) {
   ) => {
     if (!message) return;
 
+    let currentChatId = chatId;
+
     try {
       setAssistantBusy(true);
       const response = await axios.post<ChatWithMessages>(
@@ -56,6 +59,7 @@ export default function MessageList({ message }: MessageListProps) {
       const chat = response.data;
       if (chatId !== chat.id) {
         router.push(`/${chat.id}`);
+        currentChatId = chat.id;
       } else {
         setMessages(chat.messages);
       }
@@ -107,6 +111,12 @@ export default function MessageList({ message }: MessageListProps) {
       setError(true);
     } finally {
       setAssistantBusy(false);
+      const response = await axios.get<ChatWithMessages>(
+        `api/chat/${chatId}/title`
+      );
+      if (response.status === 200) {
+        setUpdatedChat(response.data);
+      }
     }
   };
 
