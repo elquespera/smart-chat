@@ -216,6 +216,8 @@ function readChunks(reader: ReadableStreamDefaultReader) {
           if (match) result = match.join(",");
         }
 
+        console.log(readResult.value, result);
+
         let json: { content?: string };
         try {
           json = JSON.parse(result);
