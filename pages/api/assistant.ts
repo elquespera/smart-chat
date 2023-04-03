@@ -1,6 +1,5 @@
 import type { NextRequest } from "next/server";
 import { OpenAIMessage } from "types";
-import { OpenAI } from "openai-streams";
 import { getAuth } from "@clerk/nextjs/server";
 import {
   createParser,
@@ -30,13 +29,7 @@ export default async function handler(req: NextRequest) {
     // const moodPrompt = ASSISTNT_MOODS[mood as AssistantMood]?.prompt || "";
     // const moodPrompt = "";
 
-    const payload = {
-      model: "gpt-3.5-turbo",
-      messages,
-      stream: true,
-    };
-
-    const stream = await OpenAIStream(payload);
+    const stream = await OpenAIStream(messages);
     return new Response(stream);
   } catch (error) {
     console.log(error);
@@ -47,11 +40,17 @@ export const config = {
   runtime: "edge",
 };
 
-async function OpenAIStream(payload: any) {
+async function OpenAIStream(messages: OpenAIMessage[]) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
   let counter = 0;
+
+  const payload = {
+    model: "gpt-3.5-turbo",
+    messages,
+    stream: true,
+  };
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     headers: {

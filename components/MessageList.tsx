@@ -121,15 +121,6 @@ export default function MessageList({ message }: MessageListProps) {
     scrollToBottom();
   }, [messageList, assistantBusy]);
 
-  const getOpenAIMessages = (messages: Message[]): OpenAIMessage[] => {
-    return messages.map(({ content, role }) => {
-      return {
-        content,
-        role: role === "USER" ? "user" : "assistant",
-      } as const;
-    });
-  };
-
   useEffect(() => {
     const updateChat = async () => {
       const chat = await addMessage(message, "USER", chatId);
