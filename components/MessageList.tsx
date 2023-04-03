@@ -95,6 +95,7 @@ export default function MessageList({ message }: MessageListProps) {
       };
 
       for await (const chunk of readChunks(reader)) {
+        console.log(chunk);
         message.content += chunk;
         setCurrentMessage({ ...message });
       }
