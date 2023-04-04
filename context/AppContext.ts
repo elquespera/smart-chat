@@ -13,6 +13,8 @@ interface AppContextInterface {
   setUpdatedChat: (chat?: Chat) => void;
   assistantBusy: boolean;
   setAssistantBusy: (isBusy: boolean) => void;
+  userPropmt?: string;
+  setUserPropmt: (prompt?: string) => void;
 }
 
 export const defaultAppContext: AppContextInterface = {
@@ -23,6 +25,7 @@ export const defaultAppContext: AppContextInterface = {
   setUpdatedChat: () => {},
   assistantBusy: false,
   setAssistantBusy: () => {},
+  setUserPropmt: () => {},
 };
 
 export const AppContext = createContext(defaultAppContext);
@@ -34,6 +37,7 @@ export function useAppContext() {
     setLanguage,
     setUpdatedChat,
     setAssistantBusy,
+    setUserPropmt,
   });
 
   function setAppTheme(theme: AppTheme) {
@@ -68,6 +72,12 @@ export function useAppContext() {
   function setAssistantBusy(isBusy: boolean) {
     setAppContext((current) => {
       return { ...current, assistantBusy: isBusy };
+    });
+  }
+
+  function setUserPropmt(prompt?: string) {
+    setAppContext((current) => {
+      return { ...current, userPropmt: prompt };
     });
   }
 
