@@ -142,7 +142,7 @@ export default function ChatItem({
                     onClick={handleEdit}
                   />
                   <IconButton
-                    icon="close"
+                    icon="delete"
                     title={t(lng.deleteChat)}
                     onClick={handleDelete}
                   />

@@ -30,6 +30,7 @@ export type IconType =
   | "send"
   | "clear"
   | "edit"
+  | "delete"
   | "settings"
   | "close"
   | "computer"
