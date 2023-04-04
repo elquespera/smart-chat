@@ -98,7 +98,7 @@ export default function ChatItem({
     <li
       className={clsx(
         `relative flex gap-1 overflow-hidden rounded-md
-         w-full h-10 flex-shrink-0 pl-2`,
+         w-full h-10 flex-shrink-0 pl-2 transition-[background-color]`,
         editing
           ? "outline -outline-offset-2 outline-2 outline-accent"
           : chatId === id

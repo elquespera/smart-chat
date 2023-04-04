@@ -15,7 +15,8 @@ export default function IconButton({ icon, ...props }: IconButtonProps) {
         p-2
         disabled:opacity-60
         disabled:hover:bg-transparent
-        hover:bg-highlight`,
+        transition-colors
+        hover:bg-highlight hover:text-primary`,
         props.className
       )}
     >

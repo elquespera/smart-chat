@@ -40,24 +40,24 @@
 }
 
 :root {
-  --clr-primary: #000;
+  --clr-primary: #0c2e05;
   --clr-background: #fff;
-  --clr-accent: #2858a5;
-  --clr-highlight: #2858a52e;
+  --clr-accent: #246113;
+  --clr-highlight: #effee7;
   --clr-contrast: #fff;
-  --clr-divider: #bbb;
+  --clr-divider: #ccc;
+}
+
+body.dark {
+  --clr-primary: #effee7;
+  --clr-background: #000;
+  --clr-accent: #67e536;
+  --clr-highlight: #0c2e05;
+  --clr-contrast: #000;
+  --clr-divider: #666;
 }
 
 body {
   color: var(--clr-primary);
   background-color: var(--clr-background);
-}
-
-body.dark {
-  --clr-primary: #eee;
-  --clr-background: #000;
-  --clr-accent: #c3e4fa;
-  --clr-highlight: #c3e4fa2e;
-  --clr-contrast: #000;
-  --clr-divider: #666;
 }

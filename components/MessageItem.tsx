@@ -28,8 +28,10 @@ export default function MessageItem({ content, role }: MessageItemProps) {
   return (
     <li
       className={clsx(
-        "group relative md:rounded-lg",
-        role === "USER" ? "text-contrast bg-accent" : "bg-highlight"
+        "group relative md:rounded-lg outline outline-1",
+        role === "USER"
+          ? "text-contrast bg-accent"
+          : "bg-highlight outline-divider"
       )}
     >
       <div className="relative p-2 md:p-4 gap-2">

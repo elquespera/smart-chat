@@ -136,7 +136,7 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
             before:bg-background before:opacity-80 before:z-20`
         )}
       >
-        <ul className="flex flex-col gap-1 overflow-hidden overflow-y-auto">
+        <ul className="flex flex-col gap-1 overflow-hidden overflow-y-auto ">
           {list.map(({ title, id }, index) => (
             <ChatItem
               key={id || index}
