@@ -13,7 +13,7 @@ interface AppContextInterface {
   setUpdatedChat: (chat?: Chat) => void;
   assistantBusy: boolean;
   setAssistantBusy: (isBusy: boolean) => void;
-  userPropmt?: string;
+  userPrompt?: string;
   setUserPropmt: (prompt?: string) => void;
 }
 
@@ -77,7 +77,7 @@ export function useAppContext() {
 
   function setUserPropmt(prompt?: string) {
     setAppContext((current) => {
-      return { ...current, userPropmt: prompt };
+      return { ...current, userPrompt: prompt };
     });
   }
 

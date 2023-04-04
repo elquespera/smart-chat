@@ -14,7 +14,6 @@ import IconButton from "./IconButton";
 import { AppContext } from "context/AppContext";
 
 interface InputProps {
-  onSend?: (message: string) => void;
   onSettings?: () => void;
 }
 
@@ -23,11 +22,11 @@ export interface InputHandle {
 }
 
 const Input = forwardRef(function Input(
-  { onSend, onSettings }: InputProps,
+  { onSettings }: InputProps,
   ref: ForwardedRef<InputHandle>
 ) {
   const t = useTranslation();
-  const { assistantBusy } = useContext(AppContext);
+  const { assistantBusy, setUserPropmt } = useContext(AppContext);
   const [message, setMessage] = useState("");
   const [valid, setValid] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -42,7 +41,7 @@ const Input = forwardRef(function Input(
 
   const handleSend = () => {
     if (valid && !assistantBusy) {
-      if (onSend) onSend(message);
+      setUserPropmt(message);
       setMessage("");
     }
   };

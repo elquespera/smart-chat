@@ -16,11 +16,7 @@ import MessageItem from "./MessageItem";
 import clsx from "clsx";
 import getOpenAIMessages from "lib/getOpenAIMessages";
 
-interface MessageListProps {
-  message?: string;
-}
-
-export default function MessageList({ message }: MessageListProps) {
+export default function MessageList() {
   const t = useTranslation();
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -28,8 +24,13 @@ export default function MessageList({ message }: MessageListProps) {
   const [error, setError] = useState(false);
   const [fetching, setFetching] = useState(false);
 
-  const { assistantBusy, setAssistantBusy, setUpdatedChat } =
-    useContext(AppContext);
+  const {
+    userPrompt,
+    assistantBusy,
+    setAssistantBusy,
+    setUpdatedChat,
+    setUserPropmt,
+  } = useContext(AppContext);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const chatId = useChatId();
   const { userId } = useAuth();
@@ -133,17 +134,18 @@ export default function MessageList({ message }: MessageListProps) {
 
   useEffect(() => {
     const updateChat = async () => {
-      const chat = await addMessage(message, "USER", chatId);
+      const chat = await addMessage(userPrompt, "USER", chatId);
       if (!chat) return;
 
       const messages = getOpenAIMessages(chat.messages);
       await fetchAssistantResponse(messages, chat.id);
+      setUserPropmt(undefined);
     };
 
-    if (!message) return;
+    if (!userPrompt) return;
 
     updateChat();
-  }, [message]);
+  }, [userPrompt]);
 
   useEffect(() => {
     const fetchChat = async () => {

@@ -16,7 +16,6 @@ import { AppContext } from "context/AppContext";
 
 export default function Main() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [message, setMessage] = useState<string>();
 
   const [mood, setMood] = useState<string>();
   const [chatsOpen, setChatsOpen] = useState(false);
@@ -72,18 +71,14 @@ export default function Main() {
               onNewChat={handleNewChat}
             />
             <div className="flex flex-col flex-grow overflow-auto">
-              <MessageList message={message} />
+              <MessageList />
               <Settings
                 open={settingsOpen}
                 mood={mood}
                 onMoodChange={handleMoodChange}
                 onClose={() => setSettingsOpen(false)}
               />
-              <Input
-                ref={inputRef}
-                onSend={setMessage}
-                onSettings={handleToggleSettings}
-              />
+              <Input ref={inputRef} onSettings={handleToggleSettings} />
             </div>
           </div>
         ) : isLoaded ? (
