@@ -17,10 +17,11 @@ model Message {
 }
 
 model Chat {
-  id       String    @id @default(cuid())
-  title    String    @db.Text
-  userId   String
-  messages Message[]
+  id          String    @id @default(cuid())
+  title       String    @db.Text
+  titleEdited Boolean?
+  userId      String
+  messages    Message[]
 
   @@index([userId])
 }

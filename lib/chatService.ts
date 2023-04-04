@@ -8,10 +8,15 @@ export function getChat(id: string, userId: string) {
   });
 }
 
-export function updateChat(id: string, userId: string, title: string) {
+export function updateChat(
+  id: string,
+  userId: string,
+  title: string,
+  titleEdited?: boolean
+) {
   return prisma.chat.update({
     where: { id },
-    data: { title: encrypt(title, userId), userId },
+    data: { title: encrypt(title, userId), titleEdited, userId },
     include: { messages: true },
   });
 }

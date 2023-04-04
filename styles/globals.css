@@ -41,8 +41,9 @@
 
 :root {
   --clr-primary: #000;
-  --clr-accent: #2858a5;
   --clr-background: #fff;
+  --clr-accent: #2858a5;
+  --clr-highlight: #2858a52e;
   --clr-contrast: #fff;
   --clr-divider: #bbb;
 }
@@ -54,8 +55,9 @@ body {
 
 body.dark {
   --clr-primary: #eee;
-  --clr-accent: #c3e4fa;
   --clr-background: #000;
+  --clr-accent: #c3e4fa;
+  --clr-highlight: #c3e4fa2e;
   --clr-contrast: #000;
   --clr-divider: #666;
 }

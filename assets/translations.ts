@@ -13,6 +13,7 @@ export enum lng {
   retry,
   copy,
   deleteChat,
+  editChatTitle,
 }
 
 type LanguageData = {
@@ -34,6 +35,7 @@ export const languageData: LanguageData = {
     [lng.retry]: "Retry",
     [lng.copy]: "Copy",
     [lng.deleteChat]: "Delete chat",
+    [lng.editChatTitle]: "Edit title",
   },
   ru: {
     [lng.welcomeAuthorized]: "Авторизируйтесь, чтобы воспользоваться SmartChat",
@@ -48,5 +50,6 @@ export const languageData: LanguageData = {
     [lng.retry]: "Повторить",
     [lng.copy]: "Скопировать",
     [lng.deleteChat]: "Удалить чат",
+    [lng.editChatTitle]: "Изменить заголовок",
   },
 };

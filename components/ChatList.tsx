@@ -3,9 +3,7 @@ import { Chat } from "@prisma/client";
 import { lng } from "assets/translations";
 import clsx from "clsx";
 import useTranslation from "hooks/useTranslation";
-import Link from "next/link";
 import Button from "./Button";
-import IconButton from "./IconButton";
 import Spinner from "./Spinner";
 import ClickAwayListener from "react-click-away-listener";
 import useChatId from "hooks/useChatId";
@@ -13,6 +11,8 @@ import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { AppContext } from "context/AppContext";
+import ChatItem from "./ChatItem";
+import { ChatWithMessages } from "types";
 
 interface ChatListProps {
   open?: boolean;
@@ -25,26 +25,60 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
   const router = useRouter();
   const [chats, setChats] = useState<Partial<Chat>[]>([]);
   const [fetching, setFetching] = useState(false);
-  const [chatDeleting, setChatDeleting] = useState<string>();
+  const [updatingChatId, setUpdatingChatId] = useState<string>();
+  const [editingChatId, setEditingChatId] = useState<string>();
   const chatId = useChatId();
-  const { updatedChat, assistantBusy } = useContext(AppContext);
+  const { updatedChat, assistantBusy, setUpdatedChat } = useContext(AppContext);
   const { userId } = useAuth();
 
   const handleClose = (eventType?: string) => {
     if (onClose && (!eventType || eventType === "click")) onClose();
   };
 
-  const handleChatDelete = async (id?: string) => {
-    if (!id || chatDeleting) return;
+  const handleChatClick = (id?: string) => {
+    if (id) {
+      handleClose();
+    } else {
+      onNewChat();
+    }
+  };
+
+  const handleChatEditStart = (id: string) => {
+    setEditingChatId(id);
+  };
+
+  const handleChatEditCancel = () => {
+    setEditingChatId(undefined);
+  };
+
+  const handleChatEditSubmit = async (id: string, title: string) => {
+    if (updatingChatId) return;
+    setEditingChatId(undefined);
     try {
-      setChatDeleting(id);
+      setUpdatingChatId(id);
+      const response = await axios.post<ChatWithMessages>(`api/chat/${id}`, {
+        title,
+        titleEdited: true,
+      });
+      if (response.status === 200) {
+        setUpdatedChat(response.data);
+      }
+    } finally {
+      setUpdatingChatId(undefined);
+    }
+  };
+
+  const handleChatDelete = async (id: string) => {
+    if (updatingChatId) return;
+    try {
+      setUpdatingChatId(id);
       const response = await axios.delete(`api/chat/${id}`);
       if (response.status === 204) {
         setChats(chats.filter((chat) => chat.id !== id));
         if (id === chatId) router.push("/");
       }
     } finally {
-      setChatDeleting(undefined);
+      setUpdatingChatId(undefined);
     }
   };
 
@@ -104,41 +138,18 @@ export default function ChatList({ open, onClose, onNewChat }: ChatListProps) {
       >
         <ul className="flex flex-col gap-1 overflow-hidden overflow-y-auto">
           {list.map(({ title, id }, index) => (
-            <li
+            <ChatItem
               key={id || index}
-              className={clsx(
-                `relative flex gap-1 overflow-hidden rounded-md
-                 w-full bg-background flex-shrink-0
-                 hover:text-contrast hover:bg-accent`,
-                chatId === id &&
-                  "before:absolute before:inset-0 before:bg-accent primary before:opacity-hover"
-              )}
-            >
-              <Link
-                href={`/${id || ""}`}
-                onClick={() => (id ? handleClose() : onNewChat())}
-                title={title}
-                className={clsx(
-                  "relative flex-grow whitespace-nowrap overflow-hidden text-ellipsis p-2",
-                  !id && "text-center"
-                )}
-              >
-                <span>{title}</span>
-              </Link>
-              {id && (
-                <div className="flex items-center flex-shrink-0">
-                  {id === chatDeleting ? (
-                    <Spinner className="w-8 h-8 p-1" />
-                  ) : (
-                    <IconButton
-                      icon="close"
-                      title={t(lng.deleteChat)}
-                      onClick={() => handleChatDelete(id)}
-                    />
-                  )}
-                </div>
-              )}
-            </li>
+              id={id}
+              title={title}
+              updating={!!id && id === updatingChatId}
+              editing={!!id && id === editingChatId}
+              onClick={handleChatClick}
+              onEdit={handleChatEditStart}
+              onEditCancel={handleChatEditCancel}
+              onEditSubmit={handleChatEditSubmit}
+              onDelete={handleChatDelete}
+            />
           ))}
         </ul>
         {fetching && <Spinner center small />}

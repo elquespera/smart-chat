@@ -28,6 +28,11 @@ export default async function handler(
     let chat = await getChat(id, userId);
     if (!chat) throw new HTTPError("Chat not found", 404);
 
+    if (chat.titleEdited) {
+      res.status(200).json(decryptChat(chat, userId));
+      return;
+    }
+
     const messages = decryptMessages(chat.messages.slice(-2), id);
 
     if (messages.length > 1) {

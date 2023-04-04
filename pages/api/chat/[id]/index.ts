@@ -25,8 +25,8 @@ export default async function handler(
       }
 
       case "POST": {
-        const { title } = <ICreateChat>req.body;
-        const chat = await updateChat(id, userId, title);
+        const { title, titleEdited } = <ICreateChat>req.body;
+        const chat = await updateChat(id, userId, title, titleEdited);
         if (!chat) throw new HTTPError("Chat not created", 400);
         res.status(200).json(decryptChat(chat, userId));
         break;

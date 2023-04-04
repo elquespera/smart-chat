@@ -18,6 +18,7 @@ export interface ErrorResponse {
 
 export interface ICreateChat {
   title: string;
+  titleEdited?: boolean;
 }
 
 export interface OpenAIMessage {
@@ -28,6 +29,7 @@ export interface OpenAIMessage {
 export type IconType =
   | "send"
   | "clear"
+  | "edit"
   | "settings"
   | "close"
   | "computer"

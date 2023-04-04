@@ -13,9 +13,9 @@ export default function IconButton({ icon, ...props }: IconButtonProps) {
       className={clsx(
         `relative overflow-hidden rounded-full
         p-2
-        disabled:opacity-60 disabled:hover:before:bg-transparent
-        before:absolute before:inset-0 before:opacity-hover
-        hover:before:bg-accent`,
+        disabled:opacity-60
+        disabled:hover:bg-transparent
+        hover:bg-highlight`,
         props.className
       )}
     >
