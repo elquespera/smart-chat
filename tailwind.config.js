@@ -20,6 +20,16 @@ module.exports = {
         highlight: "var(--clr-highlight)",
         divider: "var(--clr-divider)",
       },
+      keyframes: {
+        appear: {
+          "0%": { opacity: 0 },
+          "30%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
+      },
+      animation: {
+        appear: "appear 1s forwards",
+      },
       opacity: {
         hover: "0.2",
       },

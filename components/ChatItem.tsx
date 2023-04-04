@@ -35,6 +35,7 @@ export default function ChatItem({
   const t = useTranslation();
   const chatId = useChatId();
   const [editingTitle, setEditingTitle] = useState(title || "");
+  const [isAnimating, setIsAnimating] = useState(false);
   const { updatedChat } = useContext(AppContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -89,6 +90,10 @@ export default function ChatItem({
     setEditingTitle(title || "");
   }, [title]);
 
+  useEffect(() => {
+    setIsAnimating(!!id && id === updatedChat?.id);
+  }, [updatedChat]);
+
   return (
     <li
       className={clsx(
@@ -126,7 +131,10 @@ export default function ChatItem({
               !id && "text-center"
             )}
           >
-            <span className={clsx(id === updatedChat?.id && "animate-ping")}>
+            <span
+              className={clsx(isAnimating && "animate-appear")}
+              onAnimationEnd={() => setIsAnimating(false)}
+            >
               {title}
             </span>
           </Link>
