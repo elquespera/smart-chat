@@ -48,8 +48,6 @@ export default function MessageList() {
   ) => {
     if (!message) return;
 
-    let currentChatId = chatId;
-
     try {
       setAssistantBusy(true);
       const response = await axios.post<ChatWithMessages>(
@@ -60,7 +58,6 @@ export default function MessageList() {
       const chat = response.data;
       if (chatId !== chat.id) {
         router.push(`/${chat.id}`);
-        currentChatId = chat.id;
       } else {
         setMessages(chat.messages);
       }
