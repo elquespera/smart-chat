@@ -171,12 +171,12 @@ export default function MessageList() {
   return (
     <div
       ref={wrapperRef}
-      className="relative flex flex-grow flex-col pt-4 overflow-auto w-full h-full"
+      className="relative flex flex-grow flex-col pt-10 overflow-auto w-full h-full"
     >
       {fetching ? (
         <CenteredBox withSpinner />
       ) : messageList.length > 0 ? (
-        <ul className="grid gap-2 pb-4 sm:px-8 w-chat self-center">
+        <ul className="grid gap-16 pb-4 md:px-8 w-chat self-center">
           {messageList.map(({ content, role, id }) => (
             <MessageItem key={id} content={content} role={role} />
           ))}

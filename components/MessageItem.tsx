@@ -28,19 +28,25 @@ export default function MessageItem({ content, role }: MessageItemProps) {
   return (
     <li
       className={clsx(
-        "group relative sm:rounded-lg overflow-hidden",
-        role === "USER" &&
-          "before:absolute before:inset-0 before:bg-accent before:opacity-10"
+        "group relative md:rounded-lg",
+        role === "USER" ? "text-contrast bg-accent" : "bg-highlight"
       )}
     >
-      <div className="relative flex p-2 sm:p-4 gap-2">
-        <Avatar user={role === "USER"} />
-        <div className="markdown">
+      <div className="relative p-2 md:p-4 gap-2">
+        <div
+          className={clsx(
+            "absolute p-1 bg-background rounded-full -translate-y-11",
+            role === "ASSISTANT" && "right-4"
+          )}
+        >
+          <Avatar user={role === "USER"} />
+        </div>
+        <div className="markdown pt-4">
           <ReactMarkdown>{content}</ReactMarkdown>
         </div>
         <div className="absolute hidden group-hover:block right-1 top-1 bg-background rounded-md p-1 shadow-md">
           <IconButton
-            className={clsx(isCopying && "text-green-500")}
+            className={clsx(isCopying ? "text-green-500" : "text-primary")}
             icon={isCopying ? "check" : "copy"}
             title={t(lng.copy)}
             onClick={handleCopy}
