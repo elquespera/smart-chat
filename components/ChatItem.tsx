@@ -49,7 +49,13 @@ export default function ChatItem({
   };
 
   const handleEditSubmit = () => {
-    if (id && onEditSubmit && editingTitle) onEditSubmit(id, editingTitle);
+    if (id && onEditSubmit && editingTitle) {
+      if (editingTitle === title) {
+        handleEditCancel();
+      } else {
+        onEditSubmit(id, editingTitle);
+      }
+    }
   };
 
   const handleEditCancel = () => {
