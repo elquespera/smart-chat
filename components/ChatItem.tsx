@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import clsx from "clsx";
 import useChatId from "hooks/useChatId";
 import Link from "next/link";
@@ -7,6 +7,7 @@ import IconButton from "./IconButton";
 import useTranslation from "hooks/useTranslation";
 import { lng } from "assets/translations";
 import ClickAwayListener from "react-click-away-listener";
+import { AppContext } from "context/AppContext";
 
 interface ChatItemProps {
   title?: string;
@@ -34,6 +35,7 @@ export default function ChatItem({
   const t = useTranslation();
   const chatId = useChatId();
   const [editingTitle, setEditingTitle] = useState(title || "");
+  const { updatedChat } = useContext(AppContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
@@ -91,8 +93,7 @@ export default function ChatItem({
     <li
       className={clsx(
         `relative flex gap-1 overflow-hidden rounded-md
-         w-full h-10 flex-shrink-0 pl-2
-         group`,
+         w-full h-10 flex-shrink-0 pl-2`,
         editing
           ? "outline -outline-offset-2 outline-2 outline-accent"
           : chatId === id
@@ -125,16 +126,17 @@ export default function ChatItem({
               !id && "text-center"
             )}
           >
-            <span>{title}</span>
+            <span className={clsx(id === updatedChat?.id && "animate-ping")}>
+              {title}
+            </span>
           </Link>
-          {id && (
+          {id && chatId === id && (
             <div className="flex items-center flex-shrink-0">
               {updating ? (
                 <Spinner className="w-8 h-8 p-1" />
               ) : (
                 <>
                   <IconButton
-                    className={clsx("hidden group-hover:block")}
                     icon="edit"
                     title={t(lng.editChatTitle)}
                     onClick={handleEdit}
