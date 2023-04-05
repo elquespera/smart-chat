@@ -12,29 +12,11 @@
       @apply list-disc ml-6;
     }
 
-    p,
-    ul,
-    ol {
-      @apply mb-4 last-of-type:mb-0;
-    }
-
-    li > p {
-      display: inline;
-    }
-
-    pre {
-      @apply mb-4;
-    }
-
     pre {
       @apply bg-highlight p-4 rounded-lg;
       code {
         @apply bg-transparent rounded-none p-0;
       }
-    }
-
-    code {
-      @apply bg-highlight rounded-md p-[0.12em];
     }
   }
 }
