@@ -45,7 +45,7 @@ The following environment variables are required to run SmartChat:
 
 ```env
 OPEN_AI_API_KEY= #The API key for the OpenAI chat API.
-CLERK_SECRET_KEY= #The secret key for Clerk, the authentication and identity management provider used by SmartChat.
+CLERK_SECRET_KEY= #The secret key for Clerk.
 CRYPTR_KEY= #A secret key used to encrypt and decrypt conversation data.
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY= #The publishable key for Clerk.
 ```
@@ -70,5 +70,5 @@ The following dependencies were used in the development of the SmartChat app:
 - [react-dom](https://reactjs.org/docs/react-dom.html) - For DOM-specific methods.
 - [react-markdown](https://github.com/remarkjs/react-markdown) - For rendering Markdown syntax.
 - [typescript](https://www.typescriptlang.org/) - For adding static type checking.
-- [TailwindCSS](https://tailwindcss.com/) - For building responsive user interfaces.
-- [Cryptr](https://github.com/EnetoJara/cryptr) - For encryption and decryption of user data.
+- [tailwindcss](https://tailwindcss.com/) - For building responsive user interfaces.
+- [cryptr](https://github.com/EnetoJara/cryptr) - For encryption and decryption of user data.
